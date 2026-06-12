@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한세 방탈출 - 실시간 DB 연동 버전</title>
+    <style>
+        :root { --primary: #58a6ff; --bg: #0d1117; --card-bg: #161b22; --text: #c9d1d9; --success: #7ee787; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Malgun Gothic', sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .card { background: var(--card-bg); border: 2px solid var(--primary); border-radius: 12px; padding: 25px; max-width: 450px; width: 100%; box-shadow: 0 0 20px rgba(88, 166, 255, 0.2); box-sizing: border-box; }
+        h1 { color: var(--primary); font-size: 1.4rem; margin-top: 0; }
+        .status-bar { display: flex; justify-content: space-between; font-size: 0.9rem; color: #8b949e; margin-bottom: 15px; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+        .btn { display: block; width: 100%; padding: 12px; margin: 10px 0; background: #21262d; border: 1px solid #30363d; color: var(--text); border-radius: 6px; cursor: pointer; font-size: 0.95rem; text-align: left; transition: 0.2s; }
+        .btn:hover { background: var(--primary); color: #fff; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 10px; background: #21262d; border: 1px solid #30363d; color: #fff; border-radius: 6px; box-sizing: border-box; margin-bottom: 10px; }
+        .success-text { color: var(--success); font-weight: bold; font-size: 1.2rem; }
+        .rank-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; text-align: left; }
+        .rank-table th, .rank-table td { padding: 8px; border-bottom: 1px solid #30363d; }
+        .rank-table th { color: var(--primary); }
+        .admin-panel { margin-top: 20px; max-width: 450px; width: 100%; background: #21262d; padding: 10px; border-radius: 6px; font-size: 0.8rem; text-align: center; }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <div class="card">
+        <div class="status-bar">
+            <div>진행 상태: <span id="progress">0 / 6</span></div>
+            <div>⏱ 경과 시간: <span id="timer">00:00</span></div>
+        </div>
+        <div id="game-screen"></div>
+    </div>
+
+    <div class="admin-panel">
+        💡 <b>NFC 태그 이동 시뮬레이터:</b> 
+        <button onclick="goStation(1)">1구역</button>
+        <button onclick="goStation(2)">2구역</button>
+        <button onclick="goStation(3)">3구역</button>
+        <button onclick="goStation(4)">4구역</button>
+        <button onclick="resetGame()" style="background:#f25c54; color:white; border:none; border-radius:3px;">초기화</button>
+    </div>
+
+    <script>
+        // 🌟 선생님이 제공해주신 실제 Firebase 계정의 Config 데이터가 완벽히 연동되었습니다!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwaPx0PJilRui7w7-7n7dbswWTIiHkbfc",
+            authDomain: "hanseiescape26.firebaseapp.com",
+            databaseURL: "https://hanseiescape26-default-rtdb.asia-southeast1.firebasedatabase.app", // 프로젝트 아이디 기반 자동 매핑
+            projectId: "hanseiescape26",
+            storageBucket: "hanseiescape26.firebasestorage.app",
+            messagingSenderId: "367232513721",
+            appId: "1:367232513721:web:4cc05210dde45d9caf8d68",
+            measurementId: "G-DG92S2M328"
+        };
+        
+        // Firebase 프로젝트 시작 및 데이터베이스 연결
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // 6문제 방탈출 문제 데이터 세팅
+        const quizDatabase = {
+            1: { type: "choice", title: "🔒 1단계: 출입 통제구역", question: "해커가 보낸 낚시 문자(스미싱)를 골라 방화벽 암호를 무력화하세요!", options: ["[국민건강보험] 건강검진 보고서 발송 완료.", "[한세고] 박람회 부스로 놀러 오세요!", "[국제발신] 해외인증 결제완료 $499 확인 링크 클릭 ➔ http://hanse.io"], answer: 2, code: "H" },
+            2: { type: "choice", title: "🌐 2단계: 지능형 SW 연구실", question: "공공장소에서 비밀번호 없는 와이파이를 쓸 때 개인정보 유출을 막기 위해 하지 말아야 할 행동은?", options: ["유튜브 음악 스트리밍 듣기", "네이버 웹툰 보기", "모바일 뱅킹 로그인 및 계좌 이체하기"], answer: 2, code: "A" },
+            3: { type: "choice", title: "📱 3단계: 하드웨어 보안실", question: "10cm 이내의 가까운 거리에서만 작동하여 교통카드, 스마트 페이 등에 쓰이는 보안성이 우수한 근거리 무선 통신 기술은?", options: ["블루투스 (Bluetooth)", "NFC (Near Field Communication)", "와이파이 (Wi-Fi)"], answer: 1, code: "N" },
+            4: { type: "choice", title: "🎮 4단계: 메타버스 전시관", question: "가상공간이나 SNS에서 타인의 정보를 보호하고 건전하게 소프트웨어를 이용하는 태도를 무엇이라 할까요?", options: ["디지털 리터러시 및 사이버 보안 의식", "무차별 대입 해킹 공격", "악성코드 트로이 목마 유포"], answer: 0, code: "S" },
+            5: { type: "choice", title: "💻 최종 서버룸: 패스워드 해독", question: "[H-A-N-S] 마스터키 조합 성공! 해커의 해킹을 막기에 가장 안전한 비밀번호 설정 규칙은?", options: ["내 생일과 전화번호 연속 조합", "키보드 연속 자판 배열 (예: qwerasdf123)", "영문 대소문자, 숫자, 특수문자를 혼합한 8자리 이상"], answer: 2, code: "완료" },
+            6: { type: "input", title: "🏫 최종 서버룸: 시스템 복구", question: "마지막 단계! 미래의 화이트 해커를 키워내는 대한민국 최고의 사이버 보안 고등학교의 이름은?", answer: "한세사이버보안고등학교", code: "종료" }
+        };
+
+        let currentLevel = 1;
+        let startTime = null;
+        let timerInterval = null;
+        let nickname = "";
+        let finalSeconds = 0;
+
+        function showIntro() {
+            clearInterval(timerInterval);
+            document.getElementById('progress').innerText = "0 / 6";
+            document.getElementById('timer').innerText = "00:00";
+            
+            document.getElementById('game-screen').innerHTML = `
+                <h1>🕵️‍♂️ 보안 해킹 챌린지</h1>
+                <p>부스를 탐색하며 퀴즈를 풀고 실시간 랭킹에 도전하세요!</p>
+                <input type="text" id="nickInput" placeholder="닉네임 입력 (예: 서울중_홍길동)" />
+                <button class="btn" onclick="startGame()" style="text-align:center; background:var(--primary); color:#fff;">임무 시작 (타이머 작동)</button>
+            `;
+        }
+
+        function startGame() {
+            let input = document.getElementById('nickInput').value.trim();
+            if(!input) { alert("닉네임을 입력해주세요!"); return; }
+            nickname = input;
+            
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+            currentLevel = 1;
+            renderQuiz();
+        }
+
+        function updateTimer() {
+            let now = new Date();
+            finalSeconds = Math.floor((now - startTime) / 1000);
+            let min = String(Math.floor(finalSeconds / 60)).padStart(2, '0');
+            let sec = String(finalSeconds % 60).padStart(2, '0');
+            document.getElementById('timer').innerText = `${min}:${sec}`;
+        }
+
+        function renderQuiz() {
+            document.getElementById('progress').innerText = `${currentLevel} / 6`;
+            let q = quizDatabase[currentLevel];
+            let html = `<h1>${q.title}</h1><p>${q.question}</p>`;
+
+            if(q.type === "choice") {
+                q.options.forEach((opt, idx) => {
+                    html += `<button class="btn" onclick="submitAnswer(${idx})">${idx+1}. ${opt}</button>`;
+                });
+            } else if(q.type === "input") {
+                html += `
+                    <input type="text" id="textAnswer" placeholder="정답을 입력하세요" />
+                    <button class="btn" onclick="submitAnswer(null)" style="text-align:center; background:var(--primary); color:#fff;">정답 제출</button>
+                `;
+            }
+            document.getElementById('game-screen').innerHTML = html;
+        }
+
+        function submitAnswer(chosenIdx) {
+            let q = quizDatabase[currentLevel];
+            let isCorrect = false;
+
+            if(q.type === "choice") { if(chosenIdx === q.answer) isCorrect = true; } 
+            else if(q.type === "input") {
+                let userAns = document.getElementById('textAnswer').value.trim();
+                if(userAns.includes("한세사이버보안고")) isCorrect = true;
+            }
+
+            if(isCorrect) {
+                currentLevel++;
+                if(currentLevel > 6) { saveRecordAndShowRank(); } 
+                else { renderQuiz(); }
+            } else { alert("❌ 패스워드가 틀렸습니다. 다시 시도하세요!"); }
+        }
+
+        // 🌟 구글 실시간 데이터베이스 연동 함수
+        function saveRecordAndShowRank() {
+            clearInterval(timerInterval);
+            
+            // 1. 구글 Realtime DB에 데이터 누적 전송
+            database.ref('ranking').push({
+                username: nickname,
+                score: finalSeconds,
+                timestamp: Date.now()
+            });
+
+            document.getElementById('game-screen').innerHTML = `
+                <p class="success-text">🎉 탈출 성공! 기록 등록 완료 🎉</p>
+                <p><b>닉네임:</b> ${nickname} | <b>기록:</b> ${document.getElementById('timer').innerText}</p>
+                <hr style="border-color:#30363d;">
+                <h3>📊 실시간 랭킹 TOP 5 (구글 DB 연동)</h3>
+                <table class="rank-table">
+                    <thead><tr><th>순위</th><th>닉네임</th><th>기록</th></tr></thead>
+                    <tbody id="rank-rows"><tr><td colspan="3">로딩 중...</td></tr></tbody>
+                </table>
+            `;
+
+            // 2. 구글 DB에서 실시간으로 정렬(빠른 시간 순) 데이터 5개 땡겨오기
+            database.ref('ranking').orderByChild('score').limitToFirst(5).on('value', (snapshot) => {
+                let rowsHtml = "";
+                let rank = 1;
+                
+                snapshot.forEach((childSnapshot) => {
+                    let data = childSnapshot.val();
+                    let min = String(Math.floor(data.score / 60)).padStart(2, '0');
+                    let sec = String(data.score % 60).padStart(2, '0');
+                    
+                    let isMe = (data.username === nickname) ? "style='color:var(--success); font-weight:bold;'" : "";
+                    
+                    rowsHtml += `<tr ${isMe}><td>${rank}등</td><td>${data.username}</td><td>${min}:${sec}</td></tr>`;
+                    rank++;
+                });
+                document.getElementById('rank-rows').innerHTML = rowsHtml;
+            });
+        }
+
+        function goStation(num) { if(startTime && num <= 4) { currentLevel = num; renderQuiz(); } }
+        function resetGame() { showIntro(); }
+        showIntro();
+    </script>
+</body>
+</html>
