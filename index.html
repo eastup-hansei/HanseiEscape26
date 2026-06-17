@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한세 방탈출 - NFC 6단계 분산형 & 코스 잠금 통합본</title>
+    <title>한세 방탈출 - 동선 강제 고정형 통합본</title>
     <style>
         :root { 
             --primary: #58a6ff; 
@@ -71,14 +71,6 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
         }
-        .btn:disabled {
-            background: #161b22;
-            color: #8b949e;
-            border-color: #21262d;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
         input[type="text"], select { 
             width: 100%; 
             padding: 12px; 
@@ -90,40 +82,15 @@
             margin-bottom: 15px; 
             font-size: 1rem;
         }
-        input[type="text"]:focus, select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 8px rgba(88, 166, 255, 0.5);
-        }
         .success-text { color: var(--success); font-weight: bold; font-size: 1.3rem; text-align: center; margin-bottom: 10px; }
         .rank-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; text-align: left; }
         .rank-table th, .rank-table td { padding: 10px; border-bottom: 1px solid #30363d; }
-        .rank-table th { color: var(--primary); border-bottom: 2px solid #30363d; }
         .admin-panel { 
-            margin-top: 25px; 
-            max-width: 480px; 
-            width: 100%; 
-            background: #161b22; 
-            padding: 12px; 
-            border-radius: 8px; 
-            font-size: 0.85rem; 
-            text-align: center; 
-            border: 1px dashed #30363d;
+            margin-top: 25px; max-width: 480px; width: 100%; background: #161b22; padding: 12px; border-radius: 8px; font-size: 0.85rem; text-align: center; border: 1px dashed #30363d;
         }
-        .admin-panel button {
-            background: #21262d; color: var(--text); border: 1px solid #30363d; padding: 5px 10px; margin: 2px; border-radius: 4px; cursor: pointer;
-        }
-        .admin-panel button:hover { background: #30363d; }
-        .lock-notice {
-            background: rgba(255, 123, 114, 0.1);
-            border: 1px solid var(--error);
-            color: var(--error);
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-            text-align: center;
-        }
+        .admin-panel button { background: #21262d; color: var(--text); border: 1px solid #30363d; padding: 5px 10px; margin: 2px; border-radius: 4px; cursor: pointer; }
+        .lock-notice { background: rgba(255, 123, 114, 0.1); border: 1px solid var(--error); color: var(--error); padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 15px; text-align: center; }
+        .move-box { background: rgba(88, 166, 255, 0.1); border: 1px solid var(--primary); padding: 15px; border-radius: 8px; text-align: center; margin-top: 15px; }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -140,17 +107,20 @@
     </div>
 
     <div class="admin-panel">
-        ⚙️ <b>현장 요원 전용 시뮬레이터:</b> <br style="margin-bottom: 5px;">
-        <button onclick="goStation(1)">1구역</button>
-        <button onclick="goStation(2)">2구역</button>
-        <button onclick="goStation(3)">3구역</button>
-        <button onclick="goStation(4)">4구역</button>
-        <button onclick="goStation(5)">5구역</button>
-        <button onclick="goStation(6)">6구역</button>
+        ⚙️ <b>현장 요원 시뮬레이터 (태그 대용):</b> <br>
+        <button onclick="triggerTag(1)">1번 판넬</button>
+        <button onclick="triggerTag(2)">2번 판넬</button>
+        <button onclick="triggerTag(3)">3번 판넬</button>
+        <button onclick="triggerTag(4)">4번 판넬</button>
+        <button onclick="triggerTag(5)">5번 판넬</button>
+        <button onclick="triggerTag(6)">6번 판넬</button>
+        <button onclick="triggerTag(7)">7번 판넬</button>
+        <button onclick="triggerTag(8)">8번 판넬</button>
         <button onclick="resetGame()" style="background:#f25c54; color:white; border:none;">리셋</button>
     </div>
 
     <script>
+        // Firebase 설정 (유지)
         const firebaseConfig = {
             apiKey: "AIzaSyAwaPx0PJilRui7w7-7n7dbswWTIiHkbfc",
             authDomain: "hanseiescape26.firebaseapp.com",
@@ -161,11 +131,10 @@
             appId: "1:367232513721:web:4cc05210dde45d9caf8d68",
             measurementId: "G-DG92S2M328"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // 🛡️ 끊김 없는 전체 퀴즈 데이터베이스 구조화 완공
+        // 퀴즈 데이터베이스 (유지)
         const quizDatabase = {
             1: {
                 1: { type: "choice", title: "🟢 1코스-1: 출입 통제구역", question: "해커가 보낸 낚시 문자(스미싱)를 골라 방화벽 암호를 무력화하세요!", options: ["[국민건강보험] 건강검진 보고서 발송 완료.", "[한세고] 박람회 부스로 놀러 오세요!", "[국제발신] 해외인증 결제완료 $499 확인 링크 클릭 ➔ http://hanse.io"], answer: 2 },
@@ -209,8 +178,22 @@
             }
         };
 
+        // 설명서 이름 매칭용 배열 (1번~8번 판넬)
+        const panelNames = [
+            "",
+            "1번 판넬 (시작 : 작전발령)",
+            "2번 판넬 (Zone1 : 지능형SW과 교육과정)",
+            "3번 판넬 (Zone1 : 지능형SW과 미션 힌트)",
+            "4번 판넬 (Zone2 : 메타버스게임과 교육과정)",
+            "5번 판넬 (Zone2 : 메타버스게임과 미션 힌트)",
+            "6번 판넬 (Zone3 : 클라우드보안과 교육과정)",
+            "7번 판넬 (Zone3 : 클라우드보안과 미션힌트)",
+            "8번 판넬 (임무완료 : 최종 요원 인증서 수령처)"
+        ];
+
         let selectedCourse = 1; 
         let currentLevel = 1;   
+        let isWaitingForNextTag = false; // 📌 이동 통제용 플래그 추가
         let startTime = null;
         let timerInterval = null;
         let nickname = "";
@@ -220,69 +203,61 @@
             clearInterval(timerInterval);
             document.getElementById('progress').innerText = "0 / 6";
             document.getElementById('timer').innerText = "00:00";
+            isWaitingForNextTag = false;
             
-            // 🛡️ 기접속 세션 복구 및 예외 방어용 로직 강화
             if (localStorage.getItem('is_playing') === 'true') {
                 nickname = localStorage.getItem('locked_nickname') || "재접속 요원";
                 selectedCourse = parseInt(localStorage.getItem('locked_course')) || 1;
                 currentLevel = parseInt(localStorage.getItem('current_level')) || 1;
+                isWaitingForNextTag = localStorage.getItem('waiting_tag') === 'true';
                 
                 let savedStart = localStorage.getItem('start_time');
-                if (savedStart) {
-                    startTime = new Date(parseInt(savedStart));
-                } else {
+                if (savedStart) startTime = new Date(parseInt(savedStart));
+                else {
                     startTime = new Date();
                     localStorage.setItem('start_time', startTime.getTime());
                 }
                 
                 timerInterval = setInterval(updateTimer, 1000);
                 
-                // NFC 파라미터(?stage=) 체크 후 레벨 업데이트 보정
+                // URL 파라미터 체크 처리
                 let urlParams = new URLSearchParams(window.location.search);
                 let stageParam = parseInt(urlParams.get('stage'));
-                if (stageParam && stageParam >= 1 && stageParam <= 6) {
-                    currentLevel = stageParam;
-                    localStorage.setItem('current_level', currentLevel);
-                }
-                
-                renderQuiz();
+                if (stageParam) processTagAction(stageParam);
+                else renderQuiz();
                 return;
             }
             
             document.getElementById('game-screen').innerHTML = `
                 <h1>🕵️‍♂️ 사이버 요원 해킹 챌린지</h1>
-                <p style="text-align:center; color:#8b949e; margin-bottom:20px;">코드명 입력 후 본인의 실력에 맞는 비밀 작전 코스를 선택하세요!</p>
-                
+                <p style="text-align:center; color:#8b949e; margin-bottom:20px;">코드명 입력 후 본인의 작전 코스를 선택하세요!</p>
                 <input type="text" id="nickInput" placeholder="코드명 입력 (예: 서울중_홍길동)" onkeyup="if(window.event.keyCode==13){startGame()}" />
-                
-                <div style="margin-top:15px; text-align:left;">
-                    <label style="font-weight:bold; color:var(--primary); font-size:0.9rem;">🎯 작전 코스 설정:</label>
-                    <select id="courseSelect" style="margin-top:6px;">
-                        <option value="1">🟢 1코스: 사이버 보안 입문 (초급 상식)</option>
+                <div style="margin-top:15px;">
+                    <select id="courseSelect">
+                        <option value="1">🟢 1코스: 사이버 보안 입문 (초급)</option>
                         <option value="2">🔵 2코스: 인터넷 & 네트워크 보안 (중급)</option>
-                        <option value="3">🟠 3코스: 화이트해커 웹 해킹 (중3 추천 심화)</option>
-                        <option value="4">🔴 4코스: 암호학 & 인코딩 대치전 (심화 훈련)</option>
-                        <option value="5">💀 5코스: 악성코드 & 리버스 엔지니어링 (최상위 마스터)</option>
+                        <option value="3">🟠 3코스: 화이트해커 웹 해킹 (심화)</option>
+                        <option value="4">🔴 4코스: 암호학 & 인코딩 대치전 (심화)</option>
+                        <option value="5">💀 5코스: 악성코드 & 리버스 엔지니어링 (마스터)</option>
                     </select>
                 </div>
-                
-                <button class="btn" onclick="startGame()" style="text-align:center; background:var(--primary); color:#0d1117; font-weight:bold; margin-top:15px;">미션 가동 (타이머 시작)</button>
+                <button class="btn" onclick="startGame()" style="text-align:center; background:var(--primary); color:#0d1117; font-weight:bold; margin-top:15px;">미션 가동 (1번 판넬에서 대기)</button>
             `;
         }
 
         function startGame() {
             let input = document.getElementById('nickInput').value.trim();
-            if(!input) { alert("작전 코드명(닉네임)을 입력해주세요!"); return; }
+            if(!input) { alert("작전 코드명을 입력해주세요!"); return; }
             nickname = input;
             selectedCourse = parseInt(document.getElementById('courseSelect').value);
             
-            let urlParams = new URLSearchParams(window.location.search);
-            let stageParam = parseInt(urlParams.get('stage'));
-            currentLevel = (stageParam && stageParam >= 1 && stageParam <= 6) ? stageParam : 1;
+            currentLevel = 1;
+            isWaitingForNextTag = false;
             
             localStorage.setItem('locked_nickname', nickname);
             localStorage.setItem('locked_course', selectedCourse);
             localStorage.setItem('current_level', currentLevel);
+            localStorage.setItem('waiting_tag', 'false');
             localStorage.setItem('is_playing', 'true');
             
             startTime = new Date();
@@ -301,17 +276,45 @@
             document.getElementById('timer').innerText = `${min}:${sec}`;
         }
 
-        function renderQuiz() {
-            document.getElementById('progress').innerText = `${currentLevel} / 6`;
-            let q = quizDatabase[selectedCourse][currentLevel];
-            let html = "";
-            
-            let urlParams = new URLSearchParams(window.location.search);
-            let stageParam = parseInt(urlParams.get('stage'));
-            if (stageParam && stageParam !== currentLevel) {
-                html += `<div class="lock-notice">🔒 코스 고정 감지: 현재 부여된 진행 임무는 ${currentLevel}단계입니다.</div>`;
+        // 🛡️ 태그가 발생했을 때 물리 동선 제어 핵심 로직
+        function processTagAction(stageNum) {
+            if (isWaitingForNextTag) {
+                // 정상적으로 다음 판넬을 찾아온 경우 잠금 해제
+                if (stageNum === currentLevel) {
+                    isWaitingForNextTag = false;
+                    localStorage.setItem('waiting_tag', 'false');
+                }
             }
-            
+            renderQuiz(stageNum);
+        }
+
+        function renderQuiz(scannedStage = null) {
+            document.getElementById('progress').innerText = `${currentLevel} / 6`;
+            let html = "";
+
+            // 1. 이동 대기 화면 모드인 경우
+            if (isWaitingForNextTag) {
+                let nextPanelNum = currentLevel; // 기획상 단계 수와 판넬 번호 정렬 보정
+                if(nextPanelNum > 8) nextPanelNum = 8;
+                
+                document.getElementById('game-screen').innerHTML = `
+                    <h1>🔓 접근 권한 대기 중</h1>
+                    <div class="move-box">
+                        <p style="font-size:1.2rem; color:var(--success); font-weight:bold; margin:0 0 10px 0;">🎯 미션 해독 완료!</p>
+                        <p style="margin:0; font-size:1rem; line-height:1.5;">다음 임무를 잠금해제하려면<br><b style="color:var(--gold); font-size:1.1rem;">[ ${panelNames[nextPanelNum]} ]</b>로 이동하여 스마트폰을 태그하세요.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 2. 잘못된 판넬을 찍었을 때의 방어막 (치팅 및 역행 방지)
+            if (scannedStage && scannedStage !== currentLevel) {
+                let targetPanel = currentLevel;
+                html += `<div class="lock-notice">🔒 동선 이탈 경고: 현재 요원님은 <b>[ ${panelNames[targetPanel]} ]</b> 임무를 수행해야 합니다. 이동해 주세요.</div>`;
+            }
+
+            // 3. 정상적인 퀴즈 화면 렌더링
+            let q = quizDatabase[selectedCourse][currentLevel];
             html += `<h1>${q.title}</h1><p style='margin-bottom:20px;'>${q.question}</p>`;
 
             if(q.type === "choice") {
@@ -320,12 +323,12 @@
                 });
             } else if(q.type === "input") {
                 html += `
-                    <input type="text" id="textAnswer" placeholder="정답 플래그를 입력하세요 (엔터 가능)" onkeyup="if(window.event.keyCode==13){submitAnswer(null)}" />
+                    <input type="text" id="textAnswer" placeholder="정답 플래그를 입력하세요." onkeyup="if(window.event.keyCode==13){submitAnswer(null)}" />
                     <button class="btn" onclick="submitAnswer(null)" style="text-align:center; background:var(--primary); color:#0d1117; font-weight:bold;">시스템 복구 코드 제출</button>
                 `;
             }
             document.getElementById('game-screen').innerHTML = html;
-            if(q.type === "input") document.getElementById('textAnswer').focus();
+            if(q.type === "input" && document.getElementById('textAnswer')) document.getElementById('textAnswer').focus();
         }
 
         function submitAnswer(chosenIdx) {
@@ -346,10 +349,14 @@
             if(isCorrect) {
                 currentLevel++;
                 localStorage.setItem('current_level', currentLevel);
+                
                 if(currentLevel > 6) { 
                     saveRecordAndShowRank(); 
                 } else { 
-                    renderQuiz(); 
+                    // 📌 핵심 변경점: 맞추면 바로 다음 문제를 보여주지 않고 이동 대기 상태로 전환!
+                    isWaitingForNextTag = true;
+                    localStorage.setItem('waiting_tag', 'true');
+                    renderQuiz();
                 }
             } else { 
                 alert("❌ 암호 해독 실패: 접근이 거부되었습니다!"); 
@@ -360,23 +367,16 @@
             clearInterval(timerInterval); 
             let now = new Date();
             finalSeconds = Math.floor((now - startTime) / 1000);
+            let timeString = `${String(Math.floor(finalSeconds / 60)).padStart(2, '0')}:${String(finalSeconds % 60).padStart(2, '0')}`;
             
-            let displayMin = String(Math.floor(finalSeconds / 60)).padStart(2, '0');
-            let displaySec = String(finalSeconds % 60).padStart(2, '0');
-            let timeString = `${displayMin}:${displaySec}`;
-            
-            document.getElementById('timer').innerText = timeString;
-
             let baseScore = selectedCourse * 2000; 
-            let finalCalculatedScore = baseScore - finalSeconds;
-            if(finalCalculatedScore < 0) finalCalculatedScore = 0; 
+            let finalCalculatedScore = Math.max(0, baseScore - finalSeconds);
 
             database.ref('ranking').push({
                 username: nickname,
                 courseName: `${selectedCourse}코스`,
                 displayTime: timeString, 
                 finalScore: finalCalculatedScore,
-                negativeScore: -finalCalculatedScore, 
                 timestamp: Date.now()
             });
 
@@ -391,62 +391,43 @@
                 <hr style="border:none; border-top:1px solid #30363d; margin:15px 0;">
                 <h3 style="text-align:center; color:var(--primary); font-size:1.1rem; margin-bottom:10px;">📊 통합 요원 명예의 전당 (TOP 5)</h3>
                 <table class="rank-table">
-                    <thead><tr><th>순위</th><th>요원명(코스)</th><th>최종 점수</th><th>기록</th></tr></thead>
+                    <thead><tr><th>순위</th><th>요원명</th><th>점수</th><th>기록</th></tr></thead>
                     <tbody id="rank-rows"><tr><td colspan="4" style="text-align:center; color:#8b949e;">사령부 데이터 동기화 중...</td></tr></tbody>
                 </table>
-                <button class="btn" onclick="resetGame()" style="text-align:center; margin-top:20px; font-weight:bold; background:#21262d; border-color:#30363d;">처음 화면으로</button>
+                <button class="btn" onclick="resetGame()" style="text-align:center; margin-top:20px; font-weight:bold;">처음 화면으로</button>
             `;
 
             database.ref('ranking').once('value', (snapshot) => {
                 let allRecords = [];
                 snapshot.forEach((childSnapshot) => {
                     let data = childSnapshot.val();
-                    let score = data.finalScore;
-                    if (score === undefined || score === null) {
-                        let seconds = parseInt(data.score) || 60;
-                        score = 2000 - seconds; 
-                        if(score < 0) score = 0;
-                    }
-                    
-                    let course = data.courseName || "1코스";
-                    let time = data.displayTime || "00:00";
-
                     allRecords.push({
                         username: data.username || "익명 요원",
-                        courseName: course,
-                        finalScore: score,
-                        displayTime: time
+                        courseName: data.courseName || "1코스",
+                        finalScore: data.finalScore || 0,
+                        displayTime: data.displayTime || "00:00"
                     });
                 });
-
                 allRecords.sort((a, b) => b.finalScore - a.finalScore);
-
                 let rowsHtml = "";
-                let displayCount = Math.min(allRecords.length, 5);
-                
-                for(let rank = 1; rank <= displayCount; rank++) {
+                for(let rank = 1; rank <= Math.min(allRecords.length, 5); rank++) {
                     let item = allRecords[rank - 1];
-                    let isMe = (item.username === nickname) ? "style='color:var(--success); font-weight:bold; background-color:rgba(126,231,135,0.05);'" : "";
                     let medal = rank === 1 ? "🥇 " : rank === 2 ? "🥈 " : rank === 3 ? "🥉 " : "";
-                    
-                    rowsHtml += `<tr ${isMe}>
-                        <td>${medal}${rank}등</td>
-                        <td>${item.username} <span style="font-size:0.8rem; color:#8b949e;">(${item.courseName})</span></td>
-                        <td style="color:var(--gold); font-weight:bold;">${item.finalScore.toLocaleString()}점</td>
-                        <td>${item.displayTime}</td>
-                    </tr>`;
+                    rowsHtml += `<tr><td>${medal}${rank}등</td><td>${item.username} (${item.courseName})</td><td style="color:var(--gold);">${item.finalScore.toLocaleString()}점</td><td>${item.displayTime}</td></tr>`;
                 }
-                document.getElementById('rank-rows').innerHTML = rowsHtml || "<tr><td colspan='4' style='text-align:center;'>등록된 요원이 없습니다.</td></tr>";
+                document.getElementById('rank-rows').innerHTML = rowsHtml;
             });
         }
 
-        function goStation(num) { 
-            if(localStorage.getItem('is_playing') === 'true' && num <= 6) { 
-                currentLevel = num; 
-                localStorage.setItem('current_level', currentLevel);
-                renderQuiz(); 
-            } else if (!startTime) {
-                alert("인트로 화면에서 미션을 가동한 후에 시뮬레이터 구역 이동 기능이 팩토리 개방됩니다.");
+        // 시뮬레이터 및 NFC 태그 인식 우회 연동
+        function triggerTag(num) { 
+            let stageMap = [0, 1, 2, 3, 4, 5, 5, 5, 6]; // 판넬 번호별 매칭될 내부 stage 주소값
+            let targetStage = stageMap[num];
+            
+            if(localStorage.getItem('is_playing') === 'true') { 
+                processTagAction(targetStage); 
+            } else {
+                alert("인트로 화면에서 미션을 가동해 주세요.");
             }
         }
         
