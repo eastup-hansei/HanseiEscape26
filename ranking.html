@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한세 방탈출 - 실시간 통합 명예의 전당</title>
+    <style>
+        :root { 
+            --primary: #58a6ff; 
+            --bg: #0d1117; 
+            --card-bg: #161b22; 
+            --text: #c9d1d9; 
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            padding: 40px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            box-sizing: border-box;
+            margin: 0;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { 
+            color: var(--primary); 
+            font-size: 2.8rem; 
+            margin-bottom: 5px; 
+            text-shadow: 0 0 20px rgba(88, 166, 255, 0.4);
+            letter-spacing: -1px;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b949e;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+        .rank-table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0 12px;
+            margin-top: 15px; 
+            font-size: 1.3rem; 
+            text-align: left; 
+        }
+        .rank-table th { 
+            padding: 15px 20px; 
+            color: #8b949e; 
+            font-size: 1.1rem;
+            border-bottom: 2px solid #30363d;
+        }
+        .rank-table td { 
+            padding: 20px; 
+            background: var(--card-bg);
+            border-top: 1px solid #30363d;
+            border-bottom: 1px solid #30363d;
+        }
+        .rank-table tr td:first-child {
+            border-left: 3px solid var(--primary);
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            width: 12%;
+        }
+        .rank-table tr td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        
+        .rank-1 td { border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); background: rgba(255, 215, 0, 0.05); }
+        .rank-1 td:first-child { border-left: 4px solid var(--gold); color: var(--gold); font-size: 1.6rem; }
+        .rank-2 td { background: rgba(192, 192, 192, 0.05); }
+        .rank-2 td:first-child { border-left: 4px solid var(--silver); color: var(--silver); }
+        .rank-3 td { background: rgba(205, 127, 50, 0.05); }
+        .rank-3 td:first-child { border-left: 4px solid var(--bronze); color: var(--bronze); }
+        
+        .score { color: var(--gold); font-weight: bold; }
+        .time { color: #58a6ff; }
+        .no-data { text-align: center; color: #8b949e; padding: 40px !important; }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🕵️‍♂️ 실시간 사이버 요원 명예의 전당</h1>
+        <div class="subtitle">최고의 화이트해커 작전 수행 순위 (TOP 10)</div>
+
+        <table class="rank-table">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">순위</th>
+                    <th>요원 코드명 (도전 코스)</th>
+                    <th>최종 점수</th>
+                    <th>소요 시간</th>
+                </tr>
+            </thead>
+            <tbody id="live-rank-rows">
+                <tr>
+                    <td colspan="4" class="no-data">🛰️ 사령부 메인프레임 연결 중...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // ⚠️ 본인의 새로운 Firebase 설정 정보로 반드시 변경하세요!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwaPx0PJilRui7w7-7n7dbswWTIiHkbfc",
+            authDomain: "hanseiescape26.firebaseapp.com",
+            databaseURL: "https://hanseiescape26-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hanseiescape26",
+            storageBucket: "hanseiescape26.firebasestorage.app",
+            messagingSenderId: "367232513721",
+            appId: "1:367232513721:web:4cc05210dde45d9caf8d68",
+            measurementId: "G-DG92S2M328"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        database.ref('ranking').on('value', (snapshot) => {
+            let allRecords = [];
+            
+            snapshot.forEach((childSnapshot) => {
+                let data = childSnapshot.val();
+                allRecords.push({
+                    username: data.username || "익명 요원",
+                    courseName: data.courseName || "1코스",
+                    finalScore: data.finalScore || 0,
+                    displayTime: data.displayTime || "00:00"
+                });
+            });
+
+            allRecords.sort((a, b) => b.finalScore - a.finalScore);
+
+            let rowsHtml = "";
+            
+            if (allRecords.length === 0) {
+                rowsHtml = `<tr><td colspan="4" class="no-data">🔓 아직 임무를 완수한 요원이 없습니다. 첫 번째 주인공이 되어보세요!</td></tr>`;
+            } else {
+                let displayCount = Math.min(allRecords.length, 10);
+                for(let rank = 1; rank <= displayCount; rank++) {
+                    let item = allRecords[rank - 1];
+                    let medal = rank === 1 ? "🥇 " : rank === 2 ? "🥈 " : rank === 3 ? "🥉 " : "";
+                    let rankClass = rank <= 3 ? `class="rank-${rank}"` : "";
+
+                    rowsHtml += `
+                        <tr ${rankClass}>
+                            <td>${medal}${rank}등</td>
+                            <td><b>${item.username}</b> <span style="font-size:0.95rem; color:#8b949e; margin-left:8px;">(${item.courseName})</span></td>
+                            <td class="score">${item.finalScore.toLocaleString()} 점</td>
+                            <td class="time">⏱️ ${item.displayTime}</td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            document.getElementById('live-rank-rows').innerHTML = rowsHtml;
+        });
+    </script>
+</body>
+</html>
