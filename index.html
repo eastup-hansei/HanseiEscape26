@@ -120,7 +120,7 @@
     </div>
 
     <script>
-        // Firebase 설정 (유지)
+        // Firebase 설정
         const firebaseConfig = {
             apiKey: "AIzaSyAwaPx0PJilRui7w7-7n7dbswWTIiHkbfc",
             authDomain: "hanseiescape26.firebaseapp.com",
@@ -134,7 +134,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // 퀴즈 데이터베이스 (유지)
+        // 퀴즈 데이터베이스
         const quizDatabase = {
             1: {
                 1: { type: "choice", title: "🟢 1코스-1: 출입 통제구역", question: "해커가 보낸 낚시 문자(스미싱)를 골라 방화벽 암호를 무력화하세요!", options: ["[국민건강보험] 건강검진 보고서 발송 완료.", "[한세고] 박람회 부스로 놀러 오세요!", "[국제발신] 해외인증 결제완료 $499 확인 링크 클릭 ➔ http://hanse.io"], answer: 2 },
@@ -191,9 +191,23 @@
             "8번 판넬 (임무완료 : 최종 요원 인증서 수령처)"
         ];
 
+        // 🎯 [핵심 추가] 각 물리 판넬 번호(1~8) 규칙 정의 테이블
+        const panelRules = [
+            {},
+            { reqLevel: 1, quizLevel: 1 }, 
+            { reqLevel: 2, quizLevel: 2 }, 
+            { reqLevel: 3, quizLevel: 3 }, 
+            { reqLevel: 4, quizLevel: 4 }, 
+            { reqLevel: 5, quizLevel: 5 }, 
+            { reqLevel: 6, quizLevel: null, isPass: true },  // 6번 프리패스
+            { reqLevel: 6, quizLevel: null, isPass: true },  // 7번 프리패스
+            { reqLevel: 6, quizLevel: 6 }                    // 8번 최종 퀴즈
+        ];
+
         let selectedCourse = 1; 
-        let currentLevel = 1;   
-        let isWaitingForNextTag = false; // 📌 이동 통제용 플래그 추가
+        let currentLevel = 1;   // 현재 내부 진행도 (1~6단계)
+        let targetPanel = 1;    // 현재 유저가 반드시 찍어야 할 판넬 번호 (1~8번)
+        let isWaitingForNextTag = false; 
         let startTime = null;
         let timerInterval = null;
         let nickname = "";
@@ -209,6 +223,7 @@
                 nickname = localStorage.getItem('locked_nickname') || "재접속 요원";
                 selectedCourse = parseInt(localStorage.getItem('locked_course')) || 1;
                 currentLevel = parseInt(localStorage.getItem('current_level')) || 1;
+                targetPanel = parseInt(localStorage.getItem('target_panel')) || 1;
                 isWaitingForNextTag = localStorage.getItem('waiting_tag') === 'true';
                 
                 let savedStart = localStorage.getItem('start_time');
@@ -220,7 +235,7 @@
                 
                 timerInterval = setInterval(updateTimer, 1000);
                 
-                // URL 파라미터 체크 처리
+                // URL 파라미터 체크 처리 (?stage=1~8 번호 기반 작동)
                 let urlParams = new URLSearchParams(window.location.search);
                 let stageParam = parseInt(urlParams.get('stage'));
                 if (stageParam) processTagAction(stageParam);
@@ -252,11 +267,13 @@
             selectedCourse = parseInt(document.getElementById('courseSelect').value);
             
             currentLevel = 1;
+            targetPanel = 1;
             isWaitingForNextTag = false;
             
             localStorage.setItem('locked_nickname', nickname);
             localStorage.setItem('locked_course', selectedCourse);
             localStorage.setItem('current_level', currentLevel);
+            localStorage.setItem('target_panel', targetPanel);
             localStorage.setItem('waiting_tag', 'false');
             localStorage.setItem('is_playing', 'true');
             
@@ -276,45 +293,50 @@
             document.getElementById('timer').innerText = `${min}:${sec}`;
         }
 
-        // 🛡️ 태그가 발생했을 때 물리 동선 제어 핵심 로직
-        function processTagAction(stageNum) {
+        // 🛡️ [로직 수정 완료] 판넬 번호를 대조하여 잠금을 해제하는 제어 장치
+        function processTagAction(scannedPanel) {
             if (isWaitingForNextTag) {
-                // 정상적으로 다음 판넬을 찾아온 경우 잠금 해제
-                if (stageNum === currentLevel) {
+                if (scannedPanel === targetPanel) {
                     isWaitingForNextTag = false;
                     localStorage.setItem('waiting_tag', 'false');
+                    
+                    // 6, 7번 판넬처럼 문제를 안 풀고 설명만 읽는 구역 자동 통과 처리
+                    if (panelRules[scannedPanel].isPass) {
+                        targetPanel++;
+                        localStorage.setItem('target_panel', targetPanel);
+                        isWaitingForNextTag = true;
+                        localStorage.setItem('waiting_tag', 'true');
+                    }
                 }
             }
-            renderQuiz(stageNum);
+            renderQuiz(scannedPanel);
         }
 
-        function renderQuiz(scannedStage = null) {
-            document.getElementById('progress').innerText = `${currentLevel} / 6`;
+        function renderQuiz(scannedPanel = null) {
+            // 상단 바는 정확한 완료 문제 수(0~6개)를 표현
+            document.getElementById('progress').innerText = `${currentLevel - 1} / 6`;
             let html = "";
 
-            // 1. 이동 대기 화면 모드인 경우
+            // 1. 이동 통제 화면 활성화 시
             if (isWaitingForNextTag) {
-                let nextPanelNum = currentLevel; // 기획상 단계 수와 판넬 번호 정렬 보정
-                if(nextPanelNum > 8) nextPanelNum = 8;
-                
                 document.getElementById('game-screen').innerHTML = `
                     <h1>🔓 접근 권한 대기 중</h1>
                     <div class="move-box">
-                        <p style="font-size:1.2rem; color:var(--success); font-weight:bold; margin:0 0 10px 0;">🎯 미션 해독 완료!</p>
-                        <p style="margin:0; font-size:1rem; line-height:1.5;">다음 임무를 잠금해제하려면<br><b style="color:var(--gold); font-size:1.1rem;">[ ${panelNames[nextPanelNum]} ]</b>로 이동하여 스마트폰을 태그하세요.</p>
+                        <p style="font-size:1.2rem; color:var(--success); font-weight:bold; margin:0 0 10px 0;">🎯 임무 수행 완료!</p>
+                        <p style="margin:0; font-size:1rem; line-height:1.5;">다음 시스템을 잠금해제하려면<br><b style="color:var(--gold); font-size:1.1rem;">[ ${panelNames[targetPanel]} ]</b>로 이동하여 스마트폰을 태그하세요.</p>
                     </div>
                 `;
                 return;
             }
 
-            // 2. 잘못된 판넬을 찍었을 때의 방어막 (치팅 및 역행 방지)
-            if (scannedStage && scannedStage !== currentLevel) {
-                let targetPanel = currentLevel;
+            // 2. 다른 곳을 먼저 찍은 치팅/동선 이탈 경고 방어막
+            if (scannedPanel && scannedPanel !== targetPanel) {
                 html += `<div class="lock-notice">🔒 동선 이탈 경고: 현재 요원님은 <b>[ ${panelNames[targetPanel]} ]</b> 임무를 수행해야 합니다. 이동해 주세요.</div>`;
             }
 
-            // 3. 정상적인 퀴즈 화면 렌더링
-            let q = quizDatabase[selectedCourse][currentLevel];
+            // 3. 정상 퀴즈 화면 렌더링 
+            let activeQuizLevel = panelRules[targetPanel].quizLevel || currentLevel;
+            let q = quizDatabase[selectedCourse][activeQuizLevel];
             html += `<h1>${q.title}</h1><p style='margin-bottom:20px;'>${q.question}</p>`;
 
             if(q.type === "choice") {
@@ -332,7 +354,8 @@
         }
 
         function submitAnswer(chosenIdx) {
-            let q = quizDatabase[selectedCourse][currentLevel];
+            let activeQuizLevel = panelRules[targetPanel].quizLevel || currentLevel;
+            let q = quizDatabase[selectedCourse][activeQuizLevel];
             let isCorrect = false;
 
             if(q.type === "choice") { 
@@ -348,12 +371,13 @@
 
             if(isCorrect) {
                 currentLevel++;
+                targetPanel++; // 정답 처리 시 목표 판넬 수치도 상향
                 localStorage.setItem('current_level', currentLevel);
+                localStorage.setItem('target_panel', targetPanel);
                 
                 if(currentLevel > 6) { 
                     saveRecordAndShowRank(); 
                 } else { 
-                    // 📌 핵심 변경점: 맞추면 바로 다음 문제를 보여주지 않고 이동 대기 상태로 전환!
                     isWaitingForNextTag = true;
                     localStorage.setItem('waiting_tag', 'true');
                     renderQuiz();
@@ -419,13 +443,10 @@
             });
         }
 
-        // 시뮬레이터 및 NFC 태그 인식 우회 연동
+        // 하단 수동 시뮬레이터 연동 및 실제 NFC 태그 링크 일치화
         function triggerTag(num) { 
-            let stageMap = [0, 1, 2, 3, 4, 5, 5, 5, 6]; // 판넬 번호별 매칭될 내부 stage 주소값
-            let targetStage = stageMap[num];
-            
             if(localStorage.getItem('is_playing') === 'true') { 
-                processTagAction(targetStage); 
+                processTagAction(num); // 1~8의 판넬 고유 번호를 받아 안전 처리
             } else {
                 alert("인트로 화면에서 미션을 가동해 주세요.");
             }
