@@ -327,49 +327,62 @@
             }
 
             function submitAnswer(chosenIdx) {
-                let activeQuizLevel = (panelRules[targetPanel] && panelRules[targetPanel].quizLevel) || currentLevel;
-                let q = quizDatabase[selectedCourse][activeQuizLevel];
-                let isCorrect = false;
+    let activeQuizLevel = (panelRules[targetPanel] && panelRules[targetPanel].quizLevel) || currentLevel;
+    let q = quizDatabase[selectedCourse][activeQuizLevel];
+    let isCorrect = false;
 
-                if(q.type === "choice") { 
-                    let userChoiceNumber = String(chosenIdx + 1); 
-                    if(getSecureHash(userChoiceNumber) === q.answer) isCorrect = true; 
-                } else if(q.type === "input") {
-                    let userAns = document.getElementById('textAnswer').value.trim().toLowerCase();
-                    
-                    if(selectedCourse === 1) {
-                        if(userAns.includes("한세사이버보안고")) isCorrect = true;
-                    } else {
-                        // 중괄호 안팎의 불필요한 공백(\s*)까지 유연하게 도려내도록 정규식 개선
-                        let match = userAns.match(/flag\s*\{\s*([\s\S]*?)\s*\}/);
-                        if (match) {
-                            userAns = match[1].trim(); 
-                        } else {
-                            userAns = userAns.trim();
-                        }
-                        
-                        let hashedInput = CryptoJS.MD5(userAns).toString(CryptoJS.enc.Hex);
-                        if(hashedInput === q.answer) isCorrect = true;
-                    }
-                }
+    if(q.type === "choice") { 
+        let userChoiceNumber = String(chosenIdx + 1); 
+        if(getSecureHash(userChoiceNumber) === q.answer) isCorrect = true; 
+    } else if(q.type === "input") {
+        // 1. 입력값 전처리 (양 끝 공백 제거, 소문자화)
+        let userAns = document.getElementById('textAnswer').value.trim().toLowerCase();
+        
+        // 2. FLAG{...} 포맷 제거하고 알맹이만 추출 시도
+        let match = userAns.match(/flag\s*\{\s*([\s\S]*?)\s*\}/);
+        if (match) {
+            userAns = match[1].trim(); 
+        }
 
-                if(isCorrect) {
-                    currentLevel++; targetPanel++; 
-                    localStorage.setItem('current_level', currentLevel);
-                    localStorage.setItem('target_panel', targetPanel);
-                    
-                    if(currentLevel > 6) { 
-                        saveRecordAndShowRank(); 
-                    } else { 
-                        // 정답을 맞추면 무조건 다음 태그 대기 상태 진입하도록 고정
-                        isWaitingForNextTag = true; 
-                        localStorage.setItem('waiting_tag', 'true'); 
-                        renderQuiz(); 
-                    }
-                } else { 
-                    alert("❌ 암호 해독 실패: 접근이 거부되었습니다!"); 
-                }
+        // [예외처리] 1코스 6번 한글 정답 검증
+        if(selectedCourse === 1 && activeQuizLevel === 6) {
+            if(userAns.includes("한세사이버보안고") || userAns.includes("한세고")) isCorrect = true;
+        } 
+        
+        // [핵심] 주관식 해시 교차 검증 (SALT 있는 경우와 없는 경우 모두 대비)
+        if (!isCorrect) {
+            let hashWithoutSalt = CryptoJS.MD5(userAns).toString(CryptoJS.enc.Hex); // SALT 없는 해시
+            let hashWithSalt = getSecureHash(userAns); // SALT 포함한 해시 ("HanseiSecretKey2026")
+
+            // 디버깅용 로그 (브라우저 F12 콘솔에서 확인 가능)
+            console.log("입력된 정답:", userAns);
+            console.log("SALT 없는 해시:", hashWithoutSalt);
+            console.log("SALT 포함 해시:", hashWithSalt);
+            console.log("코드 내 정답 해시:", q.answer);
+
+            // 셋 중 하나라도 데이터베이스의 해시(또는 평문)와 일치하면 정답 처리
+            if(hashWithoutSalt === q.answer || hashWithSalt === q.answer || userAns === q.answer) {
+                isCorrect = true;
             }
+        }
+    }
+
+    if(isCorrect) {
+        currentLevel++; targetPanel++; 
+        localStorage.setItem('current_level', currentLevel);
+        localStorage.setItem('target_panel', targetPanel);
+        
+        if(currentLevel > 6) { 
+            saveRecordAndShowRank(); 
+        } else { 
+            isWaitingForNextTag = true; 
+            localStorage.setItem('waiting_tag', 'true'); 
+            renderQuiz(); 
+        }
+    } else { 
+        alert("❌ 암호 해독 실패: 접근이 거부되었습니다!\n정답을 다시 확인해 주세요."); 
+    }
+}
 
             function saveRecordAndShowRank() {
                 clearInterval(timerInterval); 
