@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한세 방탈출 - 최종 마스터 마이그레이션</title>
+    <title>한세 방탈출 - 마스터 최종 완성본</title>
     <style>
         :root { 
             --primary: #58a6ff; 
@@ -326,7 +326,7 @@
                 }
             }
 
-            // 🔐 정규식(RegEx) 기반 완벽 괄호 커팅 기술 적용으로 주관식 버그 종결
+            // 🔐 알맹이만 적든, FLAG{}를 다 적든 모두 인식하는 스마트 파싱 엔진
             function submitAnswer(chosenIdx) {
                 let activeQuizLevel = panelRules[targetPanel].quizLevel || currentLevel;
                 let q = quizDatabase[selectedCourse][activeQuizLevel];
@@ -341,7 +341,7 @@
                     if(selectedCourse === 1) {
                         if(userAns.includes("한세사이버보안고")) isCorrect = true;
                     } else {
-                        // 🛠️ 핵심 변경: 정규식을 사용해 대소문자 무시하고 flag{...} 안의 데이터만 안전하게 도려냄
+                        // 🛠️ 대완벽 수정: FLAG{...} 구조로 입력했는지 분석 후 도려내고, 아니면 입력값 통째로 검증
                         let match = userAns.match(/flag\{([\s\S]*?)\}/);
                         if (match) {
                             userAns = match[1].trim(); 
