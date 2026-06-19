@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한세 방탈출 - 마스터 완벽 통합본 (최종 헥사 디코딩 완료)</title>
+    <title>한세 방탈출 - 최종 마스터 마이그레이션</title>
     <style>
         :root { 
             --primary: #58a6ff; 
@@ -110,7 +110,7 @@
     <div class="admin-panel">
         ⚙️ <b>현장 요원 시뮬레이터 (태그 대용):</b> <br>
         <button id="sim-btn-1">1번 판넬</button>
-        <button id="sim-btn-2">2번 판nel</button>
+        <button id="sim-btn-2">2번 판넬</button>
         <button id="sim-btn-3">3번 판넬</button>
         <button id="sim-btn-4">4번 판넬</button>
         <button id="sim-btn-5">5번 판넬</button>
@@ -136,13 +136,13 @@
             firebase.initializeApp(firebaseConfig);
             const database = firebase.database();
 
-            // 🔐 우회 방지용 솔트 해싱 함수 (선택지 보안용)
+            // 🔐 선택지 보안 메커니즘
             const SALT = "HanseiSecretKey2026";
             function getSecureHash(value) {
                 return CryptoJS.MD5(value + SALT).toString(CryptoJS.enc.Hex);
             }
 
-            // 🔐 퀴즈 내부 데이터베이스 (MD5 16진수 해시값 완벽 크로스체크 완료)
+            // 🔐 퀴즈 DB (전체 무결성 전수 검증 완료)
             const quizDatabase = {
                 1: {
                     1: { type: "choice", title: "🟢 1코스-1: 출입 통제구역", question: "해커가 보낸 낚시 문자(스미싱)를 골라 방화벽 암호를 무력화하세요!", options: ["[국민건강보험] 건강검진 보고서 발송 완료.", "[한세고] 박람회 부스로 놀러 오세요!", "[국제발신] 해외인증 결제완료 $499 확인 링크 클릭 ➔ http://hanse.io"], answer: getSecureHash("3") },
@@ -166,7 +166,7 @@
                     3: { type: "choice", title: "🟠 3코스-3: 취약점 스캔", question: "웹 서버 내부망 침투를 위해 TCP 3-way Handshake를 완전히 맺지 않고, SYN 패킷만 보내 포트를 탐지하는 '스텔스 스캔' 옵션은?", options: ["nmap -sT", "nmap -sS", "nmap -sU"], answer: getSecureHash("2") },
                     4: { type: "choice", title: "🟠 3코스-4: XSS 공격", question: "게시판에 악성 자바스크립트 스크립트를 삽입하여 이를 열람한 타 사용자의 쿠키(세션)를 탈취하는 해킹 기법은?", options: ["크로스 사이트 스크립팅 (XSS)", "버퍼 오버플로우", "포트 스캐닝"], answer: getSecureHash("1") },
                     5: { type: "choice", title: "🟠 3코스-5: 관리자 페이지", question: "해커들이 보안이 허술한 웹 사이트의 관리자 페이지를 찾을 때 흔히 주소창 뒤에 입력하는 경로로 알맞은 것은?", options: ["/index.html", "/images/", "/admin"], answer: getSecureHash("3") },
-                    6: { type: "input", title: "🟠 3코스-6: WEB CTF FLAG", question: "웹 취약점을 뚫고 Flag를 획득했습니다. 복구 코드를 입력하세요.<br><br><b>[ FLAG{web_hacker_init} ]</b>", answer: "345511ba900d41ff1ec6802e07eb9e24" } // web_hacker_init 의 진짜 올바른 MD5 해시값
+                    6: { type: "input", title: "🟠 3코스-6: WEB CTF FLAG", question: "웹 취약점을 뚫고 Flag를 획득했습니다. 복구 코드를 입력하세요.<br><br><b>[ FLAG{web_hacker_init} ]</b>", answer: "345511ba900d41ff1ec6802e07eb9e24" } // web_hacker_init
                 },
                 4: {
                     1: { type: "choice", title: "🔴 4코스-1: Base64 인코딩", question: "NFC 통신 패킷 분석 중 <code>Y29kZQ==</code> 라는 암호문을 발견했습니다. 끝에 붙은 '=' 표식이 특징인 이 인코딩 기법은?", options: ["AES-256", "MD5 해시", "Base64"], answer: getSecureHash("3") },
@@ -174,7 +174,7 @@
                     3: { type: "choice", title: "🔴 4코스-3: 고전 암호 해독", question: "알파벳 글자를 일정 수만큼 평행이동시켜 단어를 암호화하는 기법으로, 'HANSEI'를 오른쪽으로 1칸씩 밀면 'IBOTFJ'가 되는 이 암호는?", options: ["시저(Caesar) 암호", "비즈네르 암호", "RSA 암호"], answer: getSecureHash("1") },
                     4: { type: "choice", title: "🔴 4코스-4: 대칭키의 한계", question: "암호화할 때 사용하는 키와 복호화할 때 사용하는 키가 동일하여 속도가 빠르지만, 키 전달 과정에서 탈취 위험이 있는 암호화 방식은?", options: ["비대칭키 방식", "대칭키 방식", "공개키 방식"], answer: getSecureHash("2") },
                     5: { type: "choice", title: "🔴 4코스-5: 디지털 서명", question: "공개키 암호화 방식을 활용하여, 송신자의 신원을 증명하고 데이터의 위변조가 없음을 보장하는 기술은?", options: ["방화벽", "전자서명(Digital Signature)", "접근 제어"], answer: getSecureHash("2") },
-                    6: { type: "input", title: "🔴 4코스-6: CRYPTO FLAG", question: "해시 충돌을 우회하고 마스터 FLAG를 확보했습니다.<br><br><b>[ FLAG{crypto_key_success} ]</b>", answer: "3c3ef942ea744cbbfb88302f37c37da6" } // crypto_key_success 
+                    6: { type: "input", title: "🔴 4코스-6: CRYPTO FLAG", question: "해시 충돌을 우회하고 마스터 FLAG를 확보했습니다.<br><br><b>[ FLAG{crypto_key_success} ]</b>", answer: "3c3ef942ea744cbbfb88302f37c37da6" } // crypto_key_success
                 },
                 5: {
                     1: { type: "choice", title: "💀 5코스-1: 파일 분석", question: "실행 파일(바이너리)을 구동하지 않고 내부의 힌트 문자열들을 정적으로 추출해 내는 리눅스 명령어로 알맞은 것은?", options: ["strings", "cat", "grep"], answer: getSecureHash("1") },
@@ -184,3 +184,226 @@
                     5: { type: "choice", title: "💀 5코스-5: 샌드박스 보안", question: "악성코드가 실제 PC 시스템에 영향을 주지 않도록 가상의 안전한 격리 환경 내에서 파일을 실행해 분석하는 기술은?", options: ["포트 포워딩", "DMZ 구역", "샌드박스 (Sandbox)"], answer: getSecureHash("3") },
                     6: { type: "input", title: "💀 5코스-6: MASTER OVERLORD FLAG", question: "한세고 사이버 요원 최종 선발 테스트 통과! 마스터 코드를 입력하세요.<br><br><b>[ FLAG{hansei_master_agent_2026} ]</b>", answer: "d4b79645fb9bc8c253d86dd1fa959a54" } // hansei_master_agent_2026
                 }
+            };
+
+            const panelNames = ["", "1번 판넬 (시작 : 작전발령)", "2번 판넬 (Zone1 : 지능형SW과 교육과정)", "3번 판넬 (Zone1 : 지능형SW과 미션 힌트)", "4번 판넬 (Zone2 : 메타버스게임과 교육과정)", "5번 판넬 (Zone2 : 메타버스게임과 미션 힌트)", "6번 판넬 (Zone3 : 클라우드보안과 교육과정)", "7번 판넬 (Zone3 : 클라우드보안과 미션힌트)", "8번 판넬 (임무완료 : 최종 요원 인증서 수령처)"];
+            const panelRules = [{}, { reqLevel: 1, quizLevel: 1 }, { reqLevel: 2, quizLevel: 2 }, { reqLevel: 3, quizLevel: 3 }, { reqLevel: 4, quizLevel: 4 }, { reqLevel: 5, quizLevel: 5 }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: 6 }];
+
+            let selectedCourse = 1; let currentLevel = 1; let targetPanel = 1; let isWaitingForNextTag = false; let startTime = null; let timerInterval = null; let nickname = ""; let finalSeconds = 0;
+
+            function showIntro() {
+                clearInterval(timerInterval);
+                document.getElementById('progress').innerText = "0 / 6";
+                document.getElementById('timer').innerText = "00:00";
+                isWaitingForNextTag = false;
+                
+                if (localStorage.getItem('is_playing') === 'true') {
+                    nickname = localStorage.getItem('locked_nickname') || "재접속 요원";
+                    selectedCourse = parseInt(localStorage.getItem('locked_course')) || 1;
+                    currentLevel = parseInt(localStorage.getItem('current_level')) || 1;
+                    targetPanel = parseInt(localStorage.getItem('target_panel')) || 1;
+                    isWaitingForNextTag = localStorage.getItem('waiting_tag') === 'true';
+                    
+                    let savedStart = localStorage.getItem('start_time');
+                    if (savedStart) startTime = new Date(parseInt(savedStart));
+                    else { startTime = new Date(); localStorage.setItem('start_time', startTime.getTime()); }
+                    
+                    timerInterval = setInterval(updateTimer, 1000);
+                    let urlParams = new URLSearchParams(window.location.search);
+                    let stageParam = parseInt(urlParams.get('stage'));
+                    if (stageParam) processTagAction(stageParam);
+                    else renderQuiz();
+                    return;
+                }
+                
+                document.getElementById('game-screen').innerHTML = `
+                    <h1>🕵️‍♂️ 사이버 요원 해킹 챌린지</h1>
+                    <p style="text-align:center; color:#8b949e; margin-bottom:20px;">코드명 입력 후 본인의 작전 코스를 선택하세요!</p>
+                    <input type="text" id="nickInput" placeholder="코드명 입력 (예: 서울중_홍길동)" />
+                    <div style="margin-top:15px;">
+                        <select id="courseSelect">
+                            <option value="1">🟢 1코스: 사이버 보안 입문 (초급)</option>
+                            <option value="2">🔵 2코스: 인터넷 & 네트워크 보안 (중급)</option>
+                            <option value="3">🟠 3코스: 화이트해커 웹 해킹 (심화)</option>
+                            <option value="4">🔴 4코스: 암호학 & 인코딩 대치전 (심화)</option>
+                            <option value="5">💀 5코스: 악성코드 & 리버스 엔지니어링 (마스터)</option>
+                        </select>
+                    </div>
+                    <button class="btn" id="start-mission-btn" style="text-align:center; background:var(--primary); color:#0d1117; font-weight:bold; margin-top:15px;">미션 가동 (1번 판넬에서 대기)</button>
+                `;
+                document.getElementById('nickInput').addEventListener('keyup', function(e) { if(e.keyCode === 13) startGame(); });
+                document.getElementById('start-mission-btn').addEventListener('click', startGame);
+            }
+
+            function startGame() {
+                let input = document.getElementById('nickInput').value.trim();
+                if(!input) { alert("작전 코드명을 입력해주세요!"); return; }
+                nickname = input;
+                selectedCourse = parseInt(document.getElementById('courseSelect').value);
+                currentLevel = 1; targetPanel = 1; isWaitingForNextTag = false;
+                
+                localStorage.setItem('locked_nickname', nickname);
+                localStorage.setItem('locked_course', selectedCourse);
+                localStorage.setItem('current_level', currentLevel);
+                localStorage.setItem('target_panel', targetPanel);
+                localStorage.setItem('waiting_tag', 'false');
+                localStorage.setItem('is_playing', 'true');
+                
+                startTime = new Date();
+                localStorage.setItem('start_time', startTime.getTime());
+                timerInterval = setInterval(updateTimer, 1000);
+                renderQuiz();
+            }
+
+            function updateTimer() {
+                if (!startTime) return;
+                let now = new Date();
+                finalSeconds = Math.floor((now - startTime) / 1000);
+                let min = String(Math.floor(finalSeconds / 60)).padStart(2, '0');
+                let sec = String(finalSeconds % 60).padStart(2, '0');
+                document.getElementById('timer').innerText = `${min}:${sec}`;
+            }
+
+            function processTagAction(scannedPanel) {
+                if (isWaitingForNextTag) {
+                    if (scannedPanel === targetPanel) {
+                        isWaitingForNextTag = false;
+                        localStorage.setItem('waiting_tag', 'false');
+                        if (panelRules[scannedPanel].isPass) {
+                            targetPanel++;
+                            localStorage.setItem('target_panel', targetPanel);
+                            isWaitingForNextTag = true;
+                            localStorage.setItem('waiting_tag', 'true');
+                        }
+                    }
+                }
+                renderQuiz(scannedPanel);
+            }
+
+            function renderQuiz(scannedPanel = null) {
+                document.getElementById('progress').innerText = `${currentLevel - 1} / 6`;
+                let html = "";
+
+                if (isWaitingForNextTag) {
+                    document.getElementById('game-screen').innerHTML = `
+                        <h1>🔓 접근 권한 대기 중</h1>
+                        <div class="move-box">
+                            <p style="font-size:1.2rem; color:var(--success); font-weight:bold; margin:0 0 10px 0;">🎯 임무 수행 완료!</p>
+                            <p style="margin:0; font-size:1rem; line-height:1.5;">다음 시스템을 잠금해제하려면<br><b style="color:var(--gold); font-size:1.1rem;">[ ${panelNames[targetPanel]} ]</b>로 이동하여 스마트폰을 태그하세요.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (scannedPanel && scannedPanel !== targetPanel) {
+                    html += `<div class="lock-notice">🔒 동선 이탈 경고: 현재 요원님은 <b>[ ${panelNames[targetPanel]} ]</b> 임무를 수행해야 합니다. 이동해 주세요.</div>`;
+                }
+
+                let activeQuizLevel = panelRules[targetPanel].quizLevel || currentLevel;
+                let q = quizDatabase[selectedCourse][activeQuizLevel];
+                html += `<h1>${q.title}</h1><p style='margin-bottom:20px;'>${q.question}</p>`;
+
+                if(q.type === "choice") {
+                    q.options.forEach((opt, idx) => {
+                        html += `<button class="btn choice-option" data-idx="${idx}">${idx+1}. ${opt}</button>`;
+                    });
+                } else if(q.type === "input") {
+                    html += `
+                        <input type="text" id="textAnswer" placeholder="정답 플래그를 입력하세요." />
+                        <button class="btn" id="submit-input-btn" style="text-align:center; background:var(--primary); color:#0d1117; font-weight:bold;">시스템 복구 코드 제출</button>
+                    `;
+                }
+                document.getElementById('game-screen').innerHTML = html;
+
+                if(q.type === "choice") {
+                    const buttons = document.querySelectorAll('.choice-option');
+                    buttons.forEach(btn => { btn.addEventListener('click', function() { submitAnswer(parseInt(this.getAttribute('data-idx'))); }); });
+                } else if(q.type === "input") {
+                    const txtInp = document.getElementById('textAnswer');
+                    txtInp.focus();
+                    txtInp.addEventListener('keyup', function(e) { if(e.keyCode === 13) submitAnswer(null); });
+                    document.getElementById('submit-input-btn').addEventListener('click', function() { submitAnswer(null); });
+                }
+            }
+
+            // 🔐 정규식(RegEx) 기반 완벽 괄호 커팅 기술 적용으로 주관식 버그 종결
+            function submitAnswer(chosenIdx) {
+                let activeQuizLevel = panelRules[targetPanel].quizLevel || currentLevel;
+                let q = quizDatabase[selectedCourse][activeQuizLevel];
+                let isCorrect = false;
+
+                if(q.type === "choice") { 
+                    let userChoiceNumber = String(chosenIdx + 1); 
+                    if(getSecureHash(userChoiceNumber) === q.answer) isCorrect = true; 
+                } else if(q.type === "input") {
+                    let userAns = document.getElementById('textAnswer').value.trim().toLowerCase();
+                    
+                    if(selectedCourse === 1) {
+                        if(userAns.includes("한세사이버보안고")) isCorrect = true;
+                    } else {
+                        // 🛠️ 핵심 변경: 정규식을 사용해 대소문자 무시하고 flag{...} 안의 데이터만 안전하게 도려냄
+                        let match = userAns.match(/flag\{([\s\S]*?)\}/);
+                        if (match) {
+                            userAns = match[1].trim(); 
+                        }
+                        
+                        let hashedInput = CryptoJS.MD5(userAns).toString(CryptoJS.enc.Hex);
+                        if(hashedInput === q.answer) isCorrect = true;
+                    }
+                }
+
+                if(isCorrect) {
+                    currentLevel++; targetPanel++; 
+                    localStorage.setItem('current_level', currentLevel);
+                    localStorage.setItem('target_panel', targetPanel);
+                    
+                    if(currentLevel > 6) { saveRecordAndShowRank(); } 
+                    else { isWaitingForNextTag = true; localStorage.setItem('waiting_tag', 'true'); renderQuiz(); }
+                } else { alert("❌ 암호 해독 실패: 접근이 거부되었습니다!"); }
+            }
+
+            function saveRecordAndShowRank() {
+                clearInterval(timerInterval); 
+                let now = new Date(); finalSeconds = Math.floor((now - startTime) / 1000);
+                let timeString = `${String(Math.floor(finalSeconds / 60)).padStart(2, '0')}:${String(finalSeconds % 60).padStart(2, '0')}`;
+                let baseScore = selectedCourse * 2000; let finalCalculatedScore = Math.max(100, baseScore - finalSeconds);
+
+                database.ref('ranking').push({ username: nickname, courseName: `${selectedCourse}코스`, displayTime: timeString, finalScore: finalCalculatedScore, timestamp: Date.now() });
+                localStorage.clear();
+
+                document.getElementById('game-screen').innerHTML = `
+                    <div class="success-text">🎉 미션 완벽 클리어! 🎉</div>
+                    <p style="text-align:center; margin-bottom:15px;"><b>요원코드:</b> ${nickname} [${selectedCourse}코스] <br> <b>획득 점수:</b> <span style="color:var(--gold); font-weight:bold;">${finalCalculatedScore.toLocaleString()}점</span> (기록: ${timeString})</p>
+                    <hr style="border:none; border-top:1px solid #30363d; margin:15px 0;">
+                    <h3 style="text-align:center; color:var(--primary); font-size:1.1rem; margin-bottom:10px;">📊 통합 요원 명예의 전당 (TOP 5)</h3>
+                    <table class="rank-table"><thead><tr><th>순위</th><th>요원명</th><th>점수</th><th>기록</th></tr></thead><tbody id="rank-rows"><tr><td colspan="4" style="text-align:center; color:#8b949e;">사령부 데이터 동기화 중...</td></tr></tbody></table>
+                    <button class="btn" id="go-home-btn" style="text-align:center; margin-top:20px; font-weight:bold;">처음 화면으로</button>
+                `;
+                document.getElementById('go-home-btn').addEventListener('click', resetGame);
+
+                database.ref('ranking').once('value', (snapshot) => {
+                    let allRecords = [];
+                    snapshot.forEach((childSnapshot) => {
+                        let data = childSnapshot.val();
+                        allRecords.push({ username: data.username || "익명 요원", courseName: data.courseName || "1코스", finalScore: data.finalScore || 0, displayTime: data.displayTime || "00:00" });
+                    });
+                    allRecords.sort((a, b) => b.finalScore - a.finalScore);
+                    let rowsHtml = "";
+                    for(let rank = 1; rank <= Math.min(allRecords.length, 5); rank++) {
+                        let item = allRecords[rank - 1]; let medal = rank === 1 ? "🥇 " : rank === 2 ? "🥈 " : rank === 3 ? "🥉 " : "";
+                        rowsHtml += `<tr><td>${medal}${rank}등</td><td>${item.username} (${item.courseName})</td><td style="color:var(--gold);">${item.finalScore.toLocaleString()}점</td><td>${item.displayTime}</td></tr>`;
+                    }
+                    document.getElementById('rank-rows').innerHTML = rowsHtml;
+                });
+            }
+
+            function triggerTag(num) { if(localStorage.getItem('is_playing') === 'true') { processTagAction(num); } else { alert("인트로 화면에서 미션을 가동해 주세요."); } }
+            function resetGame() { localStorage.clear(); let cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.replaceState({}, document.title, cleanUrl); showIntro(); }
+
+            for(let i=1; i<=8; i++) { document.getElementById(`sim-btn-${i}`).addEventListener('click', function() { triggerTag(i); }); }
+            document.getElementById('sim-btn-reset').addEventListener('click', resetGame);
+            showIntro();
+        })();
+    </script>
+</body>
+</html>
