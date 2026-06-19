@@ -326,7 +326,7 @@
                 }
             }
 
-            function submitAnswer(chosenIdx) {
+function submitAnswer(chosenIdx) {
     let activeQuizLevel = (panelRules[targetPanel] && panelRules[targetPanel].quizLevel) || currentLevel;
     let q = quizDatabase[selectedCourse][activeQuizLevel];
     let isCorrect = false;
@@ -383,7 +383,6 @@
         alert("❌ 암호 해독 실패: 접근이 거부되었습니다!\n정답을 다시 확인해 주세요."); 
     }
 }
-
             function saveRecordAndShowRank() {
                 clearInterval(timerInterval); 
                 let now = new Date(); finalSeconds = Math.floor((now - startTime) / 1000);
