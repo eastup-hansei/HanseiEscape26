@@ -26,6 +26,11 @@
             justify-content: center;
             box-sizing: border-box;
             margin: 0;
+            /* 드래그 방지로 텍스트 복사 차단 */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         .card { 
             background: var(--card-bg); 
@@ -122,6 +127,32 @@
     </div>
 
     <script>
+        // 🔒 [보안 2번 & 3번 구현] 마우스 우클릭 및 단축키 제어 시스템
+        document.addEventListener('contextmenu', event => event.preventDefault()); // 우클릭 차단
+        
+        document.addEventListener('keydown', function(e) {
+            // F12 차단
+            if (e.keyCode == 123) {
+                e.preventDefault();
+                alert("🕵️‍♂️ 방화벽 경고: 사령부 보안 정책에 따라 개발자 도구(F12) 진입이 차단되었습니다.");
+                return false;
+            }
+            // Ctrl + Shift + I (개발자 도구 단축키) 차단
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl + U (소스 보기 단축키) 차단
+            if (e.ctrlKey && e.keyCode == 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // 콘솔 이스터에그 경고창 출력
+        console.log("%c⚠️ 안녕, 미래의 화이트 해커 요원? ⚠️", "color: #ff7b72; font-size: 26px; font-weight: bold; background: #161b22; padding: 10px; border-radius: 8px;");
+        console.log("%c시스템 소스코드를 분석하려는 요원의 움직임이 포착되었습니다.\n진정한 보안 전문가는 정정당당하게 수수께끼를 해결하는 법!\n코드를 닫고 현장 미션에 집중하세요! 😉", "color: #58a6ff; font-size: 13px; line-height: 1.6;");
+
         (function() {
             const firebaseConfig = {
                 apiKey: "AIzaSyAwaPx0PJilRui7w7-7n7dbswWTIiHkbfc",
@@ -370,7 +401,6 @@
             function saveRecordAndShowRank() {
                 clearInterval(timerInterval); 
                 let now = new Date(); finalSeconds = Math.floor((now - startTime) / 1000);
-                // 🛠️ [긴급 수정 완료] 템플릿 리터럴 내부의 불필요한 세미콜론(;) 제거
                 let timeString = `${String(Math.floor(finalSeconds / 60)).padStart(2, '0')}:${String(finalSeconds % 60).padStart(2, '0')}`;
                 let baseScore = selectedCourse * 2000; let finalCalculatedScore = Math.max(100, baseScore - finalSeconds);
 
