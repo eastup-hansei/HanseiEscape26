@@ -85,7 +85,9 @@
         .success-text { color: var(--success); font-weight: bold; font-size: 1.3rem; text-align: center; margin-bottom: 10px; }
         .rank-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; text-align: left; }
         .rank-table th, .rank-table td { padding: 10px; border-bottom: 1px solid #30363d; }
+        /* 기본적으로 숨김 처리 */
         .admin-panel { 
+            display: none;
             margin-top: 25px; max-width: 480px; width: 100%; background: #161b22; padding: 12px; border-radius: 8px; font-size: 0.85rem; text-align: center; border: 1px dashed #30363d;
         }
         .admin-panel button { background: #21262d; color: var(--text); border: 1px solid #30363d; padding: 5px 10px; margin: 2px; border-radius: 4px; cursor: pointer; }
@@ -107,7 +109,7 @@
         <div id="game-screen"></div>
     </div>
 
-    <div class="admin-panel">
+    <div class="admin-panel" id="secret-admin-panel">
         ⚙️ <b>현장 요원 시뮬레이터 (태그 대용):</b> <br>
         <button id="sim-btn-1">1번 판넬</button>
         <button id="sim-btn-2">2번 판넬</button>
@@ -180,7 +182,6 @@
                     3: { type: "choice", title: "💀 5코스-3: 디버깅 기술", question: "컴파일된 프로그램 코드를 역추적하여 어셈블리어 형태로 실행 흐름을 분석하고 수정하는 기법을 무엇이라 하나요?", options: ["디버깅/리버싱 (Reversing)", "포워딩 (Forwarding)", "리팩토링 (Refactoring)"], answer: getSecureHash("1") },
                     4: { type: "choice", title: "💀 5코스-4: 사회공학적 해킹", question: "기술적 취약점이 아닌, 인간의 신뢰나 심리를 교묘히 이용하여 비밀번호를 알아내는 해킹 기법(예: 숄더 서핑 등)은?", options: ["사회공학적 해킹 (Social Engineering)", "버퍼 오버플로우", "APT 공격"], answer: getSecureHash("1") },
                     5: { type: "choice", title: "💀 5코스-5: 샌드박스 보안", question: "악성코드가 실제 PC 시스템에 영향을 주지 않도록 가상의 안전한 격리 환경 내에서 파일을 실행해 분석하는 기술은?", options: ["포트 포워딩", "DMZ 구역", "샌드박스 (Sandbox)"], answer: getSecureHash("3") },
-                    // 🎯 5코스 6번 정답 문항을 완벽한 소문자로 매칭 세팅 완료
                     6: { type: "input", title: "💀 5코스-6: MASTER OVERLORD FLAG", question: "한세고 사이버 요원 최종 선발 테스트 통과! 마스터 코드를 입력하세요.<br><br><b>[ FLAG{hansei_master_agent_2026} ]</b>", answer: "hansei_master_agent_2026" }
                 }
             };
@@ -335,21 +336,17 @@
                     let userChoiceNumber = String(chosenIdx + 1); 
                     if(getSecureHash(userChoiceNumber) === q.answer) isCorrect = true; 
                 } else if(q.type === "input") {
-                    // 1단계: 입력을 받는 시점에는 전체 소문자 처리를 임시 보류하여 정규식 원본 훼손을 막음
                     let userAns = document.getElementById('textAnswer').value.trim();
                     
-                    // 2단계: 대소문자 무시 플래그(/i)를 주어 FLAG{} 안의 알맹이 추출
                     let match = userAns.match(/flag\s*\{\s*([\s\S]*?)\s*\}/i);
                     if (match) {
                         userAns = match[1].trim(); 
                     }
                     
-                    // 3단계: 최종 비교 직전에 입력값과 정답 데이터를 둘 다 완전 소문자(.toLowerCase())로 바꾸어 매칭
                     if(userAns.toLowerCase() === q.answer.toLowerCase()) {
                         isCorrect = true;
                     }
                     
-                    // 예외 처리: 1코스 한글 학교명 입력 방어선
                     if(selectedCourse === 1 && userAns.includes("한세사이버보안고")) {
                         isCorrect = true;
                     }
@@ -375,7 +372,7 @@
             function saveRecordAndShowRank() {
                 clearInterval(timerInterval); 
                 let now = new Date(); finalSeconds = Math.floor((now - startTime) / 1000);
-                let timeString = `${String(Math.floor(finalSeconds / 60)).padStart(2, '0')}:${String(finalSeconds % 60).padStart(2, '0')}`;
+                let timeString = `${String(Math.floor(finalSeconds / 60)).padStart(2, '0')}:${String(finalSeconds % 60).padStart(2, '0');}`;
                 let baseScore = selectedCourse * 2000; let finalCalculatedScore = Math.max(100, baseScore - finalSeconds);
 
                 database.ref('ranking').push({ username: nickname, courseName: `${selectedCourse}코스`, displayTime: timeString, finalScore: finalCalculatedScore, timestamp: Date.now() });
@@ -409,6 +406,13 @@
 
             function triggerTag(num) { if(localStorage.getItem('is_playing') === 'true') { processTagAction(num); } else { alert("인트로 화면에서 미션을 가동해 주세요."); } }
             function resetGame() { localStorage.clear(); let cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.replaceState({}, document.title, cleanUrl); showIntro(); }
+
+            // 🎯 [핵심 추가] URL 파라미터 제어 로직 구현
+            let urlParams = new URLSearchParams(window.location.search);
+            // 주소 뒤에 ?admin=2026 이 붙어있을 때만 시뮬레이터를 띄워줌
+            if (urlParams.get('admin') === '2026') {
+                document.getElementById('secret-admin-panel').style.display = 'block';
+            }
 
             for(let i=1; i<=8; i++) { document.getElementById(`sim-btn-${i}`).addEventListener('click', function() { triggerTag(i); }); }
             document.getElementById('sim-btn-reset').addEventListener('click', resetGame);
