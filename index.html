@@ -148,7 +148,7 @@
                     3: { type: "choice", title: "🟢 1코스-3: 하드웨어 보안실", question: "10cm 이내의 가까운 거리에서만 작동하여 교통카드, 스마트 페이 등에 쓰이는 보안성이 우수한 근거리 무선 통신 기술은?", options: ["블루투스 (Bluetooth)", "NFC (Near Field Communication)", "와이파이 (Wi-Fi)"], answer: getSecureHash("2") },
                     4: { type: "choice", title: "🟢 1코스-4: 메타버스 전시관", question: "가상공간이나 SNS에서 타인의 정보를 보호하고 건전하게 소프트웨어를 이용하는 태도를 무엇이라 할까요?", options: ["디지털 리터러시 및 사이버 보안 의식", "무차별 대입 해킹 공격", "악성코드 트로이 목마 유포"], answer: getSecureHash("1") },
                     5: { type: "choice", title: "🟢 1코스-5: 패스워드 해독", question: "해커의 공격을 막기에 가장 안전한 비밀번호 설정 규칙은?", options: ["내 생일과 전화번호 연속 조합", "키보드 연속 자판 배열 (예: qwerasdf123)", "영문 대소문자, 숫자, 특수문자를 혼합한 8자리 이상"], answer: getSecureHash("3") },
-                    6: { type: "input", title: "🟢 1코스-6: 시스템 복구", question: "미래의 화이트 해커를 키워내는 대한민국 최고의 사이버 보안 고등학교의 이름은?", answer: "07cc1427bc305e50cc3d41f92eb93f2f" } 
+                    6: { type: "input", title: "🟢 1코스-6: 시스템 복구", question: "미래의 화이트 해커를 키워내는 대한민국 최고의 사이버 보안 고등학교의 이름은?", answer: "한세사이버보안고" } 
                 },
                 2: {
                     1: { type: "choice", title: "🔵 2코스-1: 웹 주소의 비밀", question: "데이터가 암호화되어 전송되어 가로채기를 당해도 안전하며, 주소창에 자물쇠 표시가 뜨는 보안 프로토콜은?", options: ["HTTP", "FTP", "HTTPS"], answer: getSecureHash("3") },
@@ -156,7 +156,7 @@
                     3: { type: "choice", title: "🔵 2코스-3: 포트의 이해", question: "웹 서버(HTTP)가 기본적으로 사용하는 포트(Port) 번호는?", options: ["21번", "80번", "443번"], answer: getSecureHash("2") },
                     4: { type: "choice", title: "🔵 2코스-4: IP 주소 추적", question: "현재 내가 사용 중인 컴퓨터의 네트워크 할당 정보와 IP 주소를 확인할 수 있는 Windows CMD 명령어는?", options: ["ping", "ipconfig", "dir"], answer: getSecureHash("2") },
                     5: { type: "choice", title: "🔵 2코스-5: DNS 스푸핑", question: "사용자가 포털 사이트 주소를 입력했을 때, 진짜 사이트 대신 해커가 만든 가짜 위장 사이트로 접속을 유도하는 공격은?", options: ["DNS 스푸핑", "디도스(DDoS) 공격", "랜섬웨어 유포"], answer: getSecureHash("1") },
-                    6: { type: "input", title: "🔵 2코스-6: 네트워크 클리어", question: "인터넷 주소(URL)를 컴퓨터가 이해할 수 있는 IP 주소로 변환해 주는 시스템의 약자는? (대문자 3글자)", answer: "DNS" } 
+                    6: { type: "input", title: "🔵 2코스-6: 네트워크 클리어", question: "인터넷 주소(URL)를 컴퓨터가 이해할 수 있는 IP 주소로 변환해 주는 시스템의 약자는? (대문자 3글자)", answer: "dns" } 
                 },
                 3: {
                     1: { type: "choice", title: "🟠 3코스-1: SQL Injection", question: "웹 로그인 창의 입력값 검증 미흡을 이용해 관리자 권한을 탈취하는 해킹 공격의 정확한 명칭은?", options: ["SQL Injection", "Cross Site Scripting", "DDoS 공격"], answer: getSecureHash("1") },
@@ -164,7 +164,7 @@
                     3: { type: "choice", title: "🟠 3코스-3: 취약점 스캔", question: "웹 서버 내부망 침투를 위해 TCP 3-way Handshake를 완전히 맺지 않고, SYN 패킷만 보내 포트를 탐지하는 '스텔스 스캔' 옵션은?", options: ["nmap -sT", "nmap -sS", "nmap -sU"], answer: getSecureHash("2") },
                     4: { type: "choice", title: "🟠 3코스-4: XSS 공격", question: "게시판에 악성 자바스크립트 스크립트를 삽입하여 이를 열람한 타 사용자의 쿠키(세션)를 탈취하는 해킹 기법은?", options: ["크로스 사이트 스크립팅 (XSS)", "버퍼 오버플로우", "포트 스캐닝"], answer: getSecureHash("1") },
                     5: { type: "choice", title: "🟠 3코스-5: 관리자 페이지", question: "해커들이 보안이 허술한 웹 사이트의 관리자 페이지를 찾을 때 흔히 주소창 뒤에 입력하는 경로로 알맞은 것은?", options: ["/index.html", "/images/", "/admin"], answer: getSecureHash("3") },
-                    6: { type: "input", title: "🟠 3코스-6: WEB CTF FLAG", question: "웹 취약점을 뚫고 Flag를 획득했습니다. 복구 코드를 입력하세요.<br><br><b>[ FLAG{web_hacker_init} ]</b>", answer: "FLAG{web_hacker_init}" } 
+                    6: { type: "input", title: "🟠 3코스-6: WEB CTF FLAG", question: "웹 취약점을 뚫고 Flag를 획득했습니다. 복구 코드를 입력하세요.<br><br><b>[ FLAG{web_hacker_init} ]</b>", answer: "web_hacker_init" } 
                 },
                 4: {
                     1: { type: "choice", title: "🔴 4코스-1: Base64 인코딩", question: "NFC 통신 패킷 분석 중 <code>Y29kZQ==</code> 라는 암호문을 발견했습니다. 끝에 붙은 '=' 표식이 특징인 이 인코딩 기법은?", options: ["AES-256", "MD5 해시", "Base64"], answer: getSecureHash("3") },
@@ -172,7 +172,7 @@
                     3: { type: "choice", title: "🔴 4코스-3: 고전 암호 해독", question: "알파벳 글자를 일정 수만큼 평행이동시켜 단어를 암호화하는 기법으로, 'HANSEI'를 오른쪽으로 1칸씩 밀면 'IBOTFJ'가 되는 이 암호는?", options: ["시저(Caesar) 암호", "비즈네르 암호", "RSA 암호"], answer: getSecureHash("1") },
                     4: { type: "choice", title: "🔴 4코스-4: 대칭키의 한계", question: "암호화할 때 사용하는 키와 복호화할 때 사용하는 키가 동일하여 속도가 빠르지만, 키 전달 과정에서 탈취 위험이 있는 암호화 방식은?", options: ["비대칭키 방식", "대칭키 방식", "공개키 방식"], answer: getSecureHash("2") },
                     5: { type: "choice", title: "🔴 4코스-5: 디지털 서명", question: "공개키 암호화 방식을 활용하여, 송신자의 신원을 증명하고 데이터의 위변조가 없음을 보장하는 기술은?", options: ["방화벽", "전자서명(Digital Signature)", "접근 제어"], answer: getSecureHash("2") },
-                    6: { type: "input", title: "🔴 4코스-6: CRYPTO FLAG", question: "해시 충돌을 우회하고 마스터 FLAG를 확보했습니다.<br><br><b>[ FLAG{crypto_key_success} ]</b>", answer: "FLAG{crypto_key_success}" } 
+                    6: { type: "input", title: "🔴 4코스-6: CRYPTO FLAG", question: "해시 충돌을 우회하고 마스터 FLAG를 확보했습니다.<br><br><b>[ FLAG{crypto_key_success} ]</b>", answer: "crypto_key_success" } 
                 },
                 5: {
                     1: { type: "choice", title: "💀 5코스-1: 파일 분석", question: "실행 파일(바이너리)을 구동하지 않고 내부의 힌트 문자열들을 정적으로 추출해 내는 리눅스 명령어로 알맞은 것은?", options: ["strings", "cat", "grep"], answer: getSecureHash("1") },
@@ -180,7 +180,8 @@
                     3: { type: "choice", title: "💀 5코스-3: 디버깅 기술", question: "컴파일된 프로그램 코드를 역추적하여 어셈블리어 형태로 실행 흐름을 분석하고 수정하는 기법을 무엇이라 하나요?", options: ["디버깅/리버싱 (Reversing)", "포워딩 (Forwarding)", "리팩토링 (Refactoring)"], answer: getSecureHash("1") },
                     4: { type: "choice", title: "💀 5코스-4: 사회공학적 해킹", question: "기술적 취약점이 아닌, 인간의 신뢰나 심리를 교묘히 이용하여 비밀번호를 알아내는 해킹 기법(예: 숄더 서핑 등)은?", options: ["사회공학적 해킹 (Social Engineering)", "버퍼 오버플로우", "APT 공격"], answer: getSecureHash("1") },
                     5: { type: "choice", title: "💀 5코스-5: 샌드박스 보안", question: "악성코드가 실제 PC 시스템에 영향을 주지 않도록 가상의 안전한 격리 환경 내에서 파일을 실행해 분석하는 기술은?", options: ["포트 포워딩", "DMZ 구역", "샌드박스 (Sandbox)"], answer: getSecureHash("3") },
-                    6: { type: "input", title: "💀 5코스-6: MASTER OVERLORD FLAG", question: "한세고 사이버 요원 최종 선발 테스트 통과! 마스터 코드를 입력하세요.<br><br><b>[ FLAG{hansei_master_agent_2026} ]</b>", answer: "FLAG{hansei_master_agent_2026}" } // hansei_master_agent_2026 실제 해시값으로 수정
+                    // 🎯 5코스 6번 정답 문항을 완벽한 소문자로 매칭 세팅 완료
+                    6: { type: "input", title: "💀 5코스-6: MASTER OVERLORD FLAG", question: "한세고 사이버 요원 최종 선발 테스트 통과! 마스터 코드를 입력하세요.<br><br><b>[ FLAG{hansei_master_agent_2026} ]</b>", answer: "hansei_master_agent_2026" }
                 }
             };
 
@@ -268,7 +269,6 @@
                         isWaitingForNextTag = false;
                         localStorage.setItem('waiting_tag', 'false');
                         
-                        // 단순 통과용 패스 판넬(6, 7번) 처리 보완
                         if (panelRules[scannedPanel] && panelRules[scannedPanel].isPass) {
                             targetPanel++;
                             localStorage.setItem('target_panel', targetPanel);
@@ -335,21 +335,23 @@
                     let userChoiceNumber = String(chosenIdx + 1); 
                     if(getSecureHash(userChoiceNumber) === q.answer) isCorrect = true; 
                 } else if(q.type === "input") {
-                    let userAns = document.getElementById('textAnswer').value.trim().toLowerCase();
+                    // 1단계: 입력을 받는 시점에는 전체 소문자 처리를 임시 보류하여 정규식 원본 훼손을 막음
+                    let userAns = document.getElementById('textAnswer').value.trim();
                     
-                    if(selectedCourse === 1) {
-                        if(userAns.includes("한세사이버보안고")) isCorrect = true;
-                    } else {
-                        // 중괄호 안팎의 불필요한 공백(\s*)까지 유연하게 도려내도록 정규식 개선
-                        let match = userAns.match(/flag\s*\{\s*([\s\S]*?)\s*\}/);
-                        if (match) {
-                            userAns = match[1].trim(); 
-                        } else {
-                            userAns = userAns.trim();
-                        }
-                        
-                        let hashedInput = CryptoJS.MD5(userAns).toString(CryptoJS.enc.Hex);
-                        if(hashedInput === q.answer) isCorrect = true;
+                    // 2단계: 대소문자 무시 플래그(/i)를 주어 FLAG{} 안의 알맹이 추출
+                    let match = userAns.match(/flag\s*\{\s*([\s\S]*?)\s*\}/i);
+                    if (match) {
+                        userAns = match[1].trim(); 
+                    }
+                    
+                    // 3단계: 최종 비교 직전에 입력값과 정답 데이터를 둘 다 완전 소문자(.toLowerCase())로 바꾸어 매칭
+                    if(userAns.toLowerCase() === q.answer.toLowerCase()) {
+                        isCorrect = true;
+                    }
+                    
+                    // 예외 처리: 1코스 한글 학교명 입력 방어선
+                    if(selectedCourse === 1 && userAns.includes("한세사이버보안고")) {
+                        isCorrect = true;
                     }
                 }
 
@@ -361,7 +363,6 @@
                     if(currentLevel > 6) { 
                         saveRecordAndShowRank(); 
                     } else { 
-                        // 정답을 맞추면 무조건 다음 태그 대기 상태 진입하도록 고정
                         isWaitingForNextTag = true; 
                         localStorage.setItem('waiting_tag', 'true'); 
                         renderQuiz(); 
