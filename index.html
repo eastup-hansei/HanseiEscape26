@@ -85,7 +85,6 @@
         .success-text { color: var(--success); font-weight: bold; font-size: 1.3rem; text-align: center; margin-bottom: 10px; }
         .rank-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; text-align: left; }
         .rank-table th, .rank-table td { padding: 10px; border-bottom: 1px solid #30363d; }
-        /* 기본적으로 숨김 처리 */
         .admin-panel { 
             display: none;
             margin-top: 25px; max-width: 480px; width: 100%; background: #161b22; padding: 12px; border-radius: 8px; font-size: 0.85rem; text-align: center; border: 1px dashed #30363d;
@@ -124,7 +123,6 @@
 
     <script>
         (function() {
-            // Firebase 설정 
             const firebaseConfig = {
                 apiKey: "AIzaSyAwaPx0PJilRui7w7-7n7dbswWTIiHkbfc",
                 authDomain: "hanseiescape26.firebaseapp.com",
@@ -372,7 +370,8 @@
             function saveRecordAndShowRank() {
                 clearInterval(timerInterval); 
                 let now = new Date(); finalSeconds = Math.floor((now - startTime) / 1000);
-                let timeString = `${String(Math.floor(finalSeconds / 60)).padStart(2, '0')}:${String(finalSeconds % 60).padStart(2, '0');}`;
+                // 🛠️ [긴급 수정 완료] 템플릿 리터럴 내부의 불필요한 세미콜론(;) 제거
+                let timeString = `${String(Math.floor(finalSeconds / 60)).padStart(2, '0')}:${String(finalSeconds % 60).padStart(2, '0')}`;
                 let baseScore = selectedCourse * 2000; let finalCalculatedScore = Math.max(100, baseScore - finalSeconds);
 
                 database.ref('ranking').push({ username: nickname, courseName: `${selectedCourse}코스`, displayTime: timeString, finalScore: finalCalculatedScore, timestamp: Date.now() });
@@ -407,9 +406,7 @@
             function triggerTag(num) { if(localStorage.getItem('is_playing') === 'true') { processTagAction(num); } else { alert("인트로 화면에서 미션을 가동해 주세요."); } }
             function resetGame() { localStorage.clear(); let cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.replaceState({}, document.title, cleanUrl); showIntro(); }
 
-            // 🎯 [핵심 추가] URL 파라미터 제어 로직 구현
             let urlParams = new URLSearchParams(window.location.search);
-            // 주소 뒤에 ?admin=2026 이 붙어있을 때만 시뮬레이터를 띄워줌
             if (urlParams.get('admin') === '2026') {
                 document.getElementById('secret-admin-panel').style.display = 'block';
             }
