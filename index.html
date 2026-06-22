@@ -26,7 +26,6 @@
             justify-content: center;
             box-sizing: border-box;
             margin: 0;
-            /* 드래그 방지로 텍스트 복사 차단 */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -48,12 +47,28 @@
         .status-bar { 
             display: flex; 
             justify-content: space-between; 
+            align-items: center;
             font-size: 0.95rem; 
             color: #8b949e; 
             margin-bottom: 20px; 
             border-bottom: 1px solid #30363d; 
             padding-bottom: 12px; 
             font-weight: bold;
+        }
+        /* 유저용 초기화 버튼 스타일 */
+        .reset-link {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: var(--error);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .reset-link:hover {
+            background: var(--error);
+            color: #ffffff;
         }
         .btn { 
             display: block; 
@@ -107,8 +122,9 @@
 
     <div class="card">
         <div class="status-bar">
-            <div>진행 상태: <span id="progress">0 / 6</span></div>
-            <div>⏱ 미션 시간: <span id="timer">00:00</span></div>
+            <div>진행: <span id="progress">0 / 6</span></div>
+            <div>⏱ <span id="timer">00:00</span></div>
+            <button class="reset-link" id="user-reset-btn">초기화 🔄</button>
         </div>
         <div id="game-screen"></div>
     </div>
@@ -127,29 +143,24 @@
     </div>
 
     <script>
-        // 🔒 [보안 2번 & 3번 구현] 마우스 우클릭 및 단축키 제어 시스템
-        document.addEventListener('contextmenu', event => event.preventDefault()); // 우클릭 차단
+        document.addEventListener('contextmenu', event => event.preventDefault()); 
         
         document.addEventListener('keydown', function(e) {
-            // F12 차단
             if (e.keyCode == 123) {
                 e.preventDefault();
                 alert("🕵️‍♂️ 방화벽 경고: 사령부 보안 정책에 따라 개발자 도구(F12) 진입이 차단되었습니다.");
                 return false;
             }
-            // Ctrl + Shift + I (개발자 도구 단축키) 차단
             if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) {
                 e.preventDefault();
                 return false;
             }
-            // Ctrl + U (소스 보기 단축키) 차단
             if (e.ctrlKey && e.keyCode == 85) {
                 e.preventDefault();
                 return false;
             }
         });
 
-        // 콘솔 이스터에그 경고창 출력
         console.log("%c⚠️ 안녕, 미래의 화이트 해커 요원? ⚠️", "color: #ff7b72; font-size: 26px; font-weight: bold; background: #161b22; padding: 10px; border-radius: 8px;");
         console.log("%c시스템 소스코드를 분석하려는 요원의 움직임이 포착되었습니다.\n진정한 보안 전문가는 정정당당하게 수수께끼를 해결하는 법!\n코드를 닫고 현장 미션에 집중하세요! 😉", "color: #58a6ff; font-size: 13px; line-height: 1.6;");
 
@@ -434,7 +445,21 @@
             }
 
             function triggerTag(num) { if(localStorage.getItem('is_playing') === 'true') { processTagAction(num); } else { alert("인트로 화면에서 미션을 가동해 주세요."); } }
-            function resetGame() { localStorage.clear(); let cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.replaceState({}, document.title, cleanUrl); showIntro(); }
+            
+            // 🔄 공용 게임 초기화 함수 (URL 파라미터 청소 포함)
+            function resetGame() { 
+                localStorage.clear(); 
+                let cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; 
+                window.history.replaceState({}, document.title, cleanUrl); 
+                showIntro(); 
+            }
+
+            // 🎯 초기화 버튼 클릭 확인 이벤트 연결
+            document.getElementById('user-reset-btn').addEventListener('click', function() {
+                if (confirm("🔄 정말 처음화면으로 돌아가 미션을 다시 시작하시겠습니까?\n(현재 진행 중인 코스의 기록이 초기화됩니다.)")) {
+                    resetGame();
+                }
+            });
 
             let urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('admin') === '2026') {
