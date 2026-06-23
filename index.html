@@ -183,48 +183,48 @@
                 return CryptoJS.MD5(value + SALT).toString(CryptoJS.enc.Hex);
             }
 
-const quizDatabase = {
-    1: {
-        1: { type: "choice", title: "🟢 1코스-1단계 : 파일럿 아티팩트 분석", question: "사령부 PC가 악성코드에 감염된 경로를 추적하던 중, 메일에 첨부된 문서 파일의 확장자가 변조된 것을 확인했습니다. 일반적인 문서 파일(PDF)인 것처럼 위장하여 실행을 유도하는 가장 위험한 이중 확장자 형태는 무엇입니까?", options: ["report.pdf.txt (텍스트 문서)", "invoice.pdf.exe (실행 파일)", "schedule.pdf.zip (압축 파일)"], answer: getSecureHash("2") },
-        2: { type: "choice", title: "🟢 1코스-2단계 : 디지털 자산 통제", question: "스마트폰 보안 강화를 위해 앱을 설치할 때 반드시 확인해야 하는 요소입니다. 손전등이나 계산기 같은 단순 기능 앱이 '주소록 접근', 'SMS 발송', '위치 정보 취득'을 과도하게 요구할 때 거부해야 하는 설정의 명칭은?", options: ["앱 접근 권한 (Application Permissions)", "리프레시 토큰 활성화", "백그라운드 데이터 제한"], answer: getSecureHash("1") },
-        3: { type: "choice", title: "🟢 1코스-3단계 : 미디어 무결성 검증", question: "최근 사령부 지휘관의 목소리와 얼굴을 똑같이 모방하여 기밀 송금을 요구하는 고도화된 AI 기반 신종 사기 공격이 탐지되었습니다. 인공지능 기술을 악용하여 만든 가짜 동영상 및 음성 합성 기술을 뜻하는 용어는?", options: ["빅데이터 분석 (Big Data)", "딥페이크 (Deepfake)", "블록체인 시스템 (Blockchain)"], answer: getSecureHash("2") },
-        4: { type: "choice", title: "🟢 1코스-4단계 : 스마트 홈 인프라 방어", question: "최근 가정 내 월패드나 IP카메라가 해킹되어 사생활이 유출되는 사고가 급증하고 있습니다. 사물인터넷(IoT) 단말기를 구매한 후 보안을 위해 가장 먼저 수행해야 하는 필수 조치는?", options: ["단말기 화면 밝기 조정", "공장 출하 시 설정된 관리자 초기 비밀번호 변경", "무선 공유기의 SSID 숨김 처리"], answer: getSecureHash("2") },
-        5: { type: "choice", title: "🟢 1코스-5단계 : 저장매체 파기 규격", question: "사령부의 통제 구역에서 사용하던 USB 메모리를 폐기하려고 합니다. 단순 포맷이나 파일 삭제(Delete)를 하더라도 복구 툴로 데이터가 살아날 수 있는데, 이를 방지하기 위해 무작위 데이터를 덮어쓰거나 물리적으로 부수는 보안 파기 행위는?", options: ["데이터 백업 (Backup)", "디지털 포렌식 (Forensic)", "완전 삭제 및 디가우징 (Wiping)"], answer: getSecureHash("3") },
-        6: { type: "input", title: "🟢 1코스-6단계 : 사령부 식별 코드", question: "인터넷 세상에서 사용자가 안전하게 서비스를 이용할 수 있도록 돕고, 해킹 방어와 정보보호를 아우르는 기술 분야이자 우리 학교의 핵심 전공 명칭인 'OOOOOO'을 입력하세요. (한글 6글자)", answer: "사이버보안" }
-    },
-    2: {
-        1: { type: "choice", title: "🔵 2코스-1단계 : 게이트웨이 인증", question: "외부 네트워크와 사령부 내부망을 안전하게 연결해주는 가상 통널 프로토콜입니다. 공용 인터넷망을 마치 전용선처럼 암호화하여 원격 근무자가 사령부 내부 서버에 안전하게 접속할 수 있도록 돕는 기술의 약어는?", options: ["DNS", "VPN", "DHCP"], answer: getSecureHash("2") },
-        2: { type: "choice", title: "🔵 2코스-2단계 : 유선 세그먼트 탐지", question: "네트워크 장비 중 목적지 IP 주소를 확인하여 패킷이 최적의 경로로 이동할 수 있도록 경로를 지정해 주고, 서로 다른 네트워크를 연결해 주는 3계층 핵심 네트워크 장비의 명칭은?", options: ["Router (라우터)", "Hub (허브)", "Repeater (리피터)"], answer: getSecureHash("1") },
-        3: { type: "choice", title: "🔵 2코스-3단계 : 침입 흔적 정밀 추적", question: "웹 서버나 네트워크 장비가 작동하면서 발생한 모든 행위와 접속 기록을 시간 순서대로 기록한 데이터입니다. 해킹 사고가 발생했을 때 공격자의 IP와 침입 경로를 역추적하기 위해 가장 먼저 분석해야 하는 파일은?", options: ["소스코드 파일 (Source Code)", "로그 파일 (Log File)", "환경설정 파일 (Config)"], answer: getSecureHash("2") },
-        4: { type: "choice", title: "🔵 2코스-4단계 : 하이퍼텍스트 전송 규격", question: "사령부 웹 관제소가 암호화 통신인 HTTPS 표준을 전면 도입하려 합니다. HTTPS가 보안성을 확보하기 위해 OSI 7계층의 전송 계층과 응용 계층 사이에서 데이터를 암호화할 때 사용하는 핵심 프로토콜의 표준 약어는?", options: ["SSH", "TLS/SSL", "FTP"], answer: getSecureHash("2") },
-        5: { type: "choice", title: "🔵 2코스-5단계 : 세션 탈취 아키텍처", question: "해커가 사용자와 웹 서버 사이의 유선 통신 흐름을 중간에서 가로채(Sniffing), 사용자가 전송하는 비밀번호나 세션 ID를 실시간으로 훔쳐보는 형태의 가로채기 공격 유형을 총칭하는 용어는?", options: ["Man-in-the-Middle (MITM) 공격", "Denial of Service (DoS) 공격", "Phishing 공격"], answer: getSecureHash("1") },
-        6: { type: "input", title: "🔵 2코스-6단계 : 프로토콜 식별자", question: "인터넷에 연결된 컴퓨터나 스마트폰이 서로를 식별하고 통신하기 위해 부여받는 고유한 네트워크 상의 가상 주소 체계의 약어를 입력하세요. (대문자 2글자)", answer: "ip" }
-    },
-    3: {
-        1: { type: "choice", title: "🟠 3코스-1단계 : 클라이언트 검증 우회", question: "웹 사이트 로그인 창에서 대량의 사용자 계정 정보(아이디/패스워드) 목록을 미리 준비한 뒤, 자동화 봇 프로그램을 돌려 연쇄 대입함으로써 하나라도 걸리는 계정을 탈취하는 웹 공격 기법은?", options: ["Credential Stuffing", "Directory Traversal", "File Inclusion"], answer: getSecureHash("1") },
-        2: { type: "choice", title: "🟠 3코스-2단계 : 상태 보존 토큰 오용", question: "웹 브라우저가 사용자의 로그인 상태를 유지하거나 방문 기록을 저장하기 위해 클라이언트 PC에 로컬로 보관하는 소규모 텍스트 데이터입니다. 해커가 이를 탈취하면 로그인 없이 권한을 도용할 수 있는데, 이 데이터의 명칭은?", options: ["Cookie (쿠키)", "Session (세션)", "Cache (캐시)"], answer: getSecureHash("1") },
-        3: { type: "choice", title: "🟠 3코스-3단계 : 응답 헤더 변조 분석", question: "사용자가 정상적인 은행 웹 사이트 주소를 입력했음에도 불구하고, 사용자 PC의 호스트 파일(`hosts`)을 변조하거나 라우터를 해킹하여 가짜 유사 금융 사이트로 접속을 유도해 금융 정보를 빼내는 고도화된 피싱 기법은?", options: ["Smishing (스미싱)", "Pharming (파밍)", "Spear Phishing (스피어 피싱)"], answer: getSecureHash("2") },
-        4: { type: "choice", title: "🟠 3코스-4단계 : 가용성 마비 공세", question: "해커가 수많은 좀비 PC(봇넷)를 원격 제어하여, 사령부 메인 웹 서버에 동시에 수억 건의 대량 트래픽 패킷을 쏟아부어 네트워크 대역폭을 고갈시키고 서비스를 마비시키는 분산 서비스 거부 공격의 약어는?", options: ["APT", "DDoS", "Ransomware"], answer: getSecureHash("2") },
-        5: { type: "choice", title: "🟠 3코스-5단계 : 파라미터 변조 정찰", question: "웹 애플리케이션의 URL 파라미터에 `../../etc/passwd`와 같은 상대 경로 문자열을 주입하여, 웹 루트 디렉터리를 벗어나 시스템 내부의 민감한 핵심 설정 파일에 무단 접근하는 취약점 공격 명칭은?", options: ["Directory Traversal (경로 탐색 취약점)", "SQL Injection", "XSS 공격"], answer: getSecureHash("1") },
-        6: { type: "input", title: "🟠 3코스-6단계 : WEB CTF 플래그 복구", question: "웹 해킹 방어벽 콘솔의 에러 로그 덤프에서 인코딩된 스트링 단서를 발견했습니다. URL 인코딩 처리된 아래 문자열을 원상태로 디코딩하여 최종 플래그를 입력하세요.<br><br>📝 <b>힌트: 퍼센트(%) 인코딩을 해제하십시오.</b><br><code>cyber_agent_active</code>", answer: "cyber_agent_active" }
-    },
-    4: {
-        1: { type: "choice", title: "🔴 4코스-1단계 : 알파벳 매핑 해독", question: "고전 암호 기술 중 하나로, 알파벳 평문 테이블 대신 미리 정해진 불규칙한 무작위 알파벳 대응표를 사용하여 일대일로 글자를 맞바꾸는 방식의 고전 암호 메커니즘은?", options: ["전치 암호 (Transposition Cipher)", "단일 치환 암호 (Substitution Cipher)", "스트림 암호 (Stream Cipher)"], answer: getSecureHash("2") },
-        2: { type: "choice", title: "🔴 4코스-2단계 : 수학적 비대칭 검증", question: "암호화할 때 사용하는 키(공개키)와 복호화할 때 사용하는 키(개인키)가 서로 달라, 키 분배 문제를 완벽히 해결했으나 연산 속도가 다소 느린 특징을 가진 현대 암호화 아키텍처는?", options: ["대칭키 암호 방식", "공개키(비대칭키) 암호 방식", "일방향 해시 알고리즘"], answer: getSecureHash("2") },
-        3: { type: "choice", title: "🔴 4코스-3단계 : 진법 변환 아티팩트", question: "사령부 데이터 스트림이 변조되었습니다. 컴퓨터가 처리하는 2진수 데이터 `1010`을 사람이 분석하기 편한 10진수 숫자로 변환하면 어떤 값이 도출됩니까?", options: ["8", "10", "12"], answer: getSecureHash("2") },
-        4: { type: "choice", title: "🔴 4코스-4단계 : 고강도 대칭 규격", question: "미국 표준 기술 연구소(NIST)에서 제정한 현대 대표 대칭키 암호화 표준 알고리즘으로, 블록 크기가 128비트이며 키 길이에 따라 128, 192, 256비트를 지원하는 강력한 대칭키 암호 체계는?", options: ["DES", "AES", "RSA"], answer: getSecureHash("2") },
-        5: { type: "choice", title: "🔴 4코스-5단계 : 충돌 저항성 붕괴", question: "과거에 널리 사용되었으나 무차별 대입 공격을 통해 서로 다른 입력값에서 같은 해시 결과값이 나오는 '충돌 취약점'이 발견되어, 현재는 단순 파일 무결성 체크용으로만 제한 사용되는 128비트 해시 함수는?", options: ["MD5", "SHA-256", "SHA-3"], answer: getSecureHash("1") },
-        6: { type: "input", title: "🔴 4코스-6단계 : CRYPTO 매트릭스 동기화", question: "암호 서버의 키 제어 장치 파라미터를 역산했습니다. 아래 규칙에 따라 중간 공백 스트링을 언더바(`_`)로 연결하여 마스터 플래그 코드를 입력하세요.<br><br><b>[ secure ] + [ network ] + [ perfect ]</b>", answer: "secure_network_perfect" }
-    },
-    5: {
-        1: { type: "choice", title: "💀 5코스-1단계 : 윈도우 PE 정적 탐지", question: "실행 파일(EXE)이 윈도우 운영체제에서 실행되기 위해 메모리에 로드되는 규격 구조를 뜻하며, 파일의 아키텍처(32/64비트) 정보 및 라이브러리 API 임포트 테이블을 품고 있는 바이너리 포맷 규격은?", options: ["PE (Portable Executable) 구조", "ELF 구조", "ZIP 아카이브 규격"], answer: getSecureHash("1") },
-        2: { type: "choice", title: "💀 5코스-2단계 : 패치되지 않은 위협", question: "소프트웨어 제조사가 보안 취약점을 발견하고 이를 해결할 패치 프로그램을 배포하기 전, 그 무방비 상태의 시간 공백을 노려 전격적으로 감행되는 고도화된 해킹 공격 유형은?", options: ["Zero-Day (제로데이) 공격", "Phishing (피싱) 공격", "Brute-Force 공격"], answer: getSecureHash("1") },
-        3: { type: "choice", title: "💀 5코스-3단계 : 휘발성 덤프 포렌식", question: "해킹 피해를 입은 시스템을 분석할 때, 컴퓨터 전원이 꺼지면 내부 데이터가 모두 증발하여 사라지는 휘발성 메모리 자원으로, 활성 상태의 악성코드 프로세스를 잡기 위해 최우선 덤프해야 하는 곳은?", options: ["SSD 저장장치", "RAM (주기억장치)", "Hard Disk (HDD)"], answer: getSecureHash("2") },
-        4: { type: "choice", title: "💀 5코스-4단계 : 공급망 무결성 침해", question: "공격자가 신뢰성 있는 소프트웨어 개발사의 업데이트 서버나 배포 공급망에 먼저 침투하여 정식 업데이트 파일에 악성코드를 숨겨두고, 사용자들이 정상 파일로 오인해 다운로드하게 유도하는 해킹 유형은?", options: ["사회공학적 공격", "Supply Chain Attack (공급망 공격)", "랜섬웨어 유포 기법"], answer: getSecureHash("2") },
-        5: { type: "choice", title: "💀 5코스-5단계 : 제어 흐름 분기점 변조", question: "바이너리 리버싱 분석을 방해하기 위해 해커가 사용합니다. 실행 코드의 논리를 꼬아두거나 소스코드를 읽기 힘든 난해한 형태로 변형시켜 분석 엔진의 디컴파일러 동작을 마비시키는 기술은?", options: ["코드 난독화 (Obfuscation)", "디버깅 시뮬레이션", "리팩토링 아키텍처"], answer: getSecureHash("1") },
-        6: { type: "input", title: "💀 5코스-6단계 : OVERLORD 커널 완전 장악", question: "사령부 침투 봇넷의 백도어 실행 파일의 기계어 덤프 코드를 리어셈블하여 마스터 시그니처를 복구했습니다. 아래 어셈블리 명령에 따라 유추되는 최종 문자열 코드를 입력하세요.<br><br>⚙️ <b>복구 힌트 레지스터 덤프:</b><br><code>MOV EBX, "root_"</code><br><code>STRCAT EBX, "system_"</code><br><code>STRCAT EBX, "clear"</code>", answer: "root_system_clear" }
-    }
-};
+            const quizDatabase = {
+                1: {
+                    1: { type: "choice", title: "🟢 1코스-1: 보안 로그 분석", question: "해커가 보낸 낚시 문자(스미싱)를 골라 방화벽 암호를 무력화하세요!", options: ["[국민건강보험] 건강검진 보고서 발송 완료.", "[한세고] 박람회 부스로 놀러 오세요!", "[국제발신] 해외인증 결제완료 $499 확인 링크 클릭 ➔ http://hanse.io"], answer: getSecureHash("3") },
+                    2: { type: "choice", title: "🟢 1코스-2: 지능형 SW 연구실", question: "공공장소에서 비밀번호 없는 와이파이를 쓸 때 개인정보 유출을 막기 위해 하지 말아야 할 행동은?", options: ["유튜브 음악 스트리밍 듣기", "네이버 웹툰 보기", "모바일 뱅킹 로그인 및 계좌 이체하기"], answer: getSecureHash("3") },
+                    3: { type: "choice", title: "🟢 1코스-3: 하드웨어 보안실", question: "10cm 이내의 가까운 거리에서만 작동하여 교통카드, 스마트 페이 등에 쓰이는 보안성이 우수한 근거리 무선 통신 기술은?", options: ["블루투스 (Bluetooth)", "NFC (Near Field Communication)", "와이파이 (Wi-Fi)"], answer: getSecureHash("2") },
+                    4: { type: "choice", title: "🟢 1코스-4: 메타버스 전시관", question: "가상공간이나 SNS에서 타인의 정보를 보호하고 건전하게 소프트웨어를 이용하는 태도를 무엇이라 할까요?", options: ["디지털 리터러시 및 사이버 보안 의식", "무차별 대입 해킹 공격", "악성코드 트로이 목마 유포"], answer: getSecureHash("1") },
+                    5: { type: "choice", title: "🟢 1코스-5: 패스워드 해독", question: "해커의 공격을 막기에 가장 안전한 비밀번호 설정 규칙은?", options: ["내 생일과 전화번호 연속 조합", "키보드 연속 자판 배열 (예: qwerasdf123)", "영문 대소문자, 숫자, 특수문자를 혼합한 8자리 이상"], answer: getSecureHash("3") },
+                    6: { type: "input", title: "🟢 1코스-6: 메인프레임 복구", question: "미래의 화이트 해커를 키워내는 대한민국 최고의 정보보안 고등학교의 이름은?", answer: "한세사이버보안고" } 
+                },
+                2: {
+                    1: { type: "choice", title: "🔵 2코스-1: 암호화 전송 분석", question: "데이터가 암호화되어 전송되어 가로채기를 당해도 안전하며, 주소창에 자물쇠 표시가 뜨는 보안 프로토콜은?", options: ["HTTP", "FTP", "HTTPS"], answer: getSecureHash("3") },
+                    2: { type: "choice", title: "🔵 2코스-2: 경계 보안 시스템", question: "외부의 불법 침입을 막고 허가된 트래픽만 통과시키는 가장 기본적인 네트워크 보안 장비(시스템)는?", options: ["방화벽 (Firewall)", "라우터 (Router)", "스위치 (Switch)"], answer: getSecureHash("1") },
+                    3: { type: "choice", title: "🔵 2코스-3: 논리 채널 분석", question: "웹 서버(HTTP)가 기본적으로 사용하는 포트(Port) 번호는?", options: ["21번", "80번", "443번"], answer: getSecureHash("2") },
+                    4: { type: "choice", title: "🔵 2코스-4: 인터페이스 정찰", question: "현재 내가 사용 중인 컴퓨터의 네트워크 할당 정보와 IP 주소를 확인할 수 있는 Windows CMD 명령어는?", options: ["ping", "ipconfig", "dir"], answer: getSecureHash("2") },
+                    5: { type: "choice", title: "🔵 2코스-5: 트래픽 하이재킹", question: "사용자가 포털 사이트 주소를 입력했을 때, 진짜 사이트 대신 해커가 만든 가짜 위장 사이트로 접속을 유도하는 공격은?", options: ["DNS 스푸핑", "디도스(DDoS) 공격", "랜섬웨어 유포"], answer: getSecureHash("1") },
+                    6: { type: "input", title: "🔵 2코스-6: 디렉토리 해석기", question: "인터넷 주소(URL)를 컴퓨터가 이해할 수 있는 IP 주소로 변환해 주는 시스템의 약자는? (대문자 3글자)", answer: "dns" } 
+                },
+                3: {
+                    1: { type: "choice", title: "🟠 3코스-1: 데이터베이스 침투", question: "웹 로그인 창의 입력값 검증 미흡을 이용해 관리자 권한을 탈취하는 해킹 공격의 정확한 명칭은?", options: ["SQL Injection", "Cross Site Scripting", "DDoS 공격"], answer: getSecureHash("1") },
+                    2: { type: "choice", title: "🟠 3코스-2: 하이퍼텍스트 정적 분석", question: "웹 브라우저에서 마우스 우클릭이나 'F12' 키를 눌러 개발자 도구를 켜면 볼 수 있는, 웹 페이지의 구조를 이루는 코드는?", options: ["Python", "HTML", "C++"], answer: getSecureHash("2") },
+                    3: { type: "choice", title: "🟠 3코스-3: 세그먼트 스텔스 탐지", question: "웹 서버 내부망 침투를 위해 TCP 3-way Handshake를 완전히 맺지 않고, SYN 패킷만 보내 포트를 탐지하는 '스텔스 스캔' 옵션은?", options: ["nmap -sT", "nmap -sS", "nmap -sU"], answer: getSecureHash("2") },
+                    4: { type: "choice", title: "🟠 3코스-4: 스크립트 인젝션", question: "게시판에 악성 자바스크립트 스크립트를 삽입하여 이를 열람한 타 사용자의 쿠키(세션)를 탈취하는 해킹 기법은?", options: ["크로스 사이트 스크립팅 (XSS)", "버퍼 오버플로우", "포트 스캐닝"], answer: getSecureHash("1") },
+                    5: { type: "choice", title: "🟠 3코스-5: 제어 권한 탐색", question: "해커들이 보안이 허술한 웹 사이트의 관리자 페이지를 찾을 때 흔히 주소창 뒤에 입력하는 경로로 알맞은 것은?", options: ["/index.html", "/images/", "/admin"], answer: getSecureHash("3") },
+                    6: { type: "input", title: "🟠 3코스-6: WEB CTF 데이터 복구", question: "웹 취약점을 뚫고 Flag를 획득했습니다. 복구 코드를 입력하세요.<br><br><b>[ FLAG{web_hacker_init} ]</b>", answer: "web_hacker_init" } 
+                },
+                4: {
+                    1: { type: "choice", title: "🔴 4코스-1: 아스키 스트림 변환", question: "NFC 통신 패킷 분석 중 <code>Y29kZQ==</code> 라는 암호문을 발견했습니다. 끝에 붙은 '=' 표식이 특징인 이 인코딩 기법은?", options: ["AES-256", "MD5 해시", "Base64"], answer: getSecureHash("3") },
+                    2: { type: "choice", title: "🔴 4코스-2: 일방향 연산 검증", question: "비밀번호 저장 시 사용되며, 한 번 암호화하면 원래의 평문으로 복호화(역산)가 불가능한 일방향 암호화 기술은?", options: ["대칭키 암호화", "해시(Hash) 함수", "공개키 암호화"], answer: getSecureHash("2") },
+                    3: { type: "choice", title: "🔴 4코스-3: 평행 이동 치환", question: "알파벳 글자를 일정 수만큼 평행이동시켜 단어를 암호화하는 기법으로, 'HANSEI'를 오른쪽으로 1칸씩 밀면 'IBOTFJ'가 되는 이 암호는?", options: ["시저(Caesar) 암호", "비즈네르 암호", "RSA 암호"], answer: getSecureHash("1") },
+                    4: { type: "choice", title: "🔴 4코스-4: 비밀키 분배 취약점", question: "암호화할 때 사용하는 키와 복호화할 때 사용하는 키가 동일하여 속도가 빠르지만, 키 전달 과정에서 탈취 위험이 있는 암호화 방식은?", options: ["비대칭키 방식", "대칭키 방식", "공개키 방식"], answer: getSecureHash("2") },
+                    5: { type: "choice", title: "🔴 4코스-5: 부인 방지 메커니즘", question: "공개키 암호화 방식을 활용하여, 송신자의 신원을 증명하고 데이터의 위변조가 없음을 보장하는 기술은?", options: ["방화벽", "전자서명(Digital Signature)", "접근 제어"], answer: getSecureHash("2") },
+                    6: { type: "input", title: "🔴 4코스-6: CRYPTO 매트릭스 조합", question: "해시 충돌을 우회하고 마스터 FLAG를 확보했습니다.<br><br><b>[ FLAG{crypto_key_success} ]</b>", answer: "crypto_key_success" } 
+                },
+                5: {
+                    1: { type: "choice", title: "💀 5코스-1: 정적 바이너리 분석", question: "실행 파일(바이너리)을 구동하지 않고 내부의 힌트 문자열들을 정적으로 추출해 내는 리눅스 명령어로 알맞은 것은?", options: ["strings", "cat", "grep"], answer: getSecureHash("1") },
+                    2: { type: "choice", title: "💀 5코스-2: 자산 인질 프로세스", question: "사용자의 파일을 강제로 암호화한 뒤, 이를 복구해 주는 대가로 가상화폐(비트코인 등)를 요구하는 악성코드는?", options: ["트로이 목마", "웜 바이러스", "랜섬웨어 (Ransomware)"], answer: getSecureHash("3") },
+                    3: { type: "choice", title: "💀 5코스-3: 레지스터 흐름 제어", question: "컴파일된 프로그램 코드를 역추적하여 어셈블리어 형태로 실행 흐름을 분석하고 수정하는 기법을 무엇이라 하나요?", options: ["디버깅/리버싱 (Reversing)", "포워딩 (Forwarding)", "리팩토링 (Refactoring)"], answer: getSecureHash("1") },
+                    4: { type: "choice", title: "💀 5코스-4: 비기술적 기밀 탈취", question: "기술적 취약점이 아닌, 인간의 신뢰나 심리를 교묘히 이용하여 비밀번호를 알아내는 해킹 기법(예: 숄더 서핑 등)은?", options: ["사회공학적 해킹 (Social Engineering)", "버퍼 오버플로우", "APT 공격"], answer: getSecureHash("1") },
+                    5: { type: "choice", title: "💀 5코스-5: 커널 격리 동적 관측", question: "악성코드가 실제 PC 시스템에 영향을 주지 않도록 가상의 안전한 격리 환경 내에서 파일을 실행해 분석하는 기술은?", options: ["포트 포워딩", "DMZ 구역", "샌드박스 (Sandbox)"], answer: getSecureHash("3") },
+                    6: { type: "input", title: "💀 5코스-6: OVERLORD 통신 오버라이드", question: "한세고 사이버 요원 최종 선발 테스트 통과! 마스터 코드를 입력하세요.<br><br><b>[ FLAG{hansei_master_agent_2026} ]</b>", answer: "hansei_master_agent_2026" }
+                }
+            };
 
             const panelNames = ["", "1번 판넬 (시작 : 작전발령)", "2번 판넬 (Zone1 : 지능형SW과 교육과정)", "3번 판넬 (Zone1 : 지능형SW과 미션 힌트)", "4번 판넬 (Zone2 : 메타버스게임과 교육과정)", "5번 판넬 (Zone2 : 메타버스게임과 미션 힌트)", "6번 판넬 (Zone3 : 클라우드보안과 교육과정)", "7번 판넬 (Zone3 : 클라우드보안과 미션힌트)", "8번 판넬 (임무완료 : 최종 요원 인증서 수령처)"];
             const panelRules = [{}, { reqLevel: 1, quizLevel: 1 }, { reqLevel: 2, quizLevel: 2 }, { reqLevel: 3, quizLevel: 3 }, { reqLevel: 4, quizLevel: 4 }, { reqLevel: 5, quizLevel: 5 }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: 6 }];
