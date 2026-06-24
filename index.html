@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한세 방탈출 - 마스터 랜덤 완성본</title>
+    <title>한세 방탈출 - 오답 제한 최종본</title>
     <style>
         :root { 
             --primary: #58a6ff; 
@@ -48,7 +48,7 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            font-size: 0.95rem; 
+            font-size: 0.9rem; 
             color: #8b949e; 
             margin-bottom: 20px; 
             border-bottom: 1px solid #30363d; 
@@ -102,6 +102,7 @@
             font-size: 1rem;
         }
         .success-text { color: var(--success); font-weight: bold; font-size: 1.3rem; text-align: center; margin-bottom: 10px; }
+        .error-text { color: var(--error); font-weight: bold; font-size: 1.4rem; text-align: center; margin-bottom: 15px; }
         .rank-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; text-align: left; }
         .rank-table th, .rank-table td { padding: 10px; border-bottom: 1px solid #30363d; }
         .admin-panel { 
@@ -121,7 +122,8 @@
 
     <div class="card">
         <div class="status-bar">
-            <div>진행: <span id="progress">0 / 6</span> <span id="set-badge" style="font-size:0.8rem; color:var(--primary);"></span></div>
+            <div>진행: <span id="progress">0 / 6</span> <span id="set-badge" style="font-size:0.75rem; color:var(--primary);"></span></div>
+            <div style="color: var(--error);">🚨 오답: <span id="wrong-count">0</span> / 3</div>
             <div>⏱ <span id="timer">00:00</span></div>
             <button class="reset-link" id="user-reset-btn">초기화 🔄</button>
         </div>
@@ -145,23 +147,10 @@
         document.addEventListener('contextmenu', event => event.preventDefault()); 
         
         document.addEventListener('keydown', function(e) {
-            if (e.keyCode == 123) {
-                e.preventDefault();
-                alert("🕵️‍♂️ 방화벽 경고: 사령부 보안 정책에 따라 개발자 도구(F12) 진입이 차단되었습니다.");
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.keyCode == 85) {
-                e.preventDefault();
-                return false;
-            }
+            if (e.keyCode == 123) { e.preventDefault(); alert("🕵️‍♂️ 방화벽 경고: 개발자 도구 진입이 차단되었습니다."); return false; }
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.keyCode == 85) { e.preventDefault(); return false; }
         });
-
-        console.log("%c⚠️ 안녕, 미래의 화이트 해커 요원? ⚠️", "color: #ff7b72; font-size: 26px; font-weight: bold; background: #161b22; padding: 10px; border-radius: 8px;");
-        console.log("%c시스템 소스코드를 분석하려는 요원의 움직임이 포착되었습니다.\n진정한 보안 전문가는 정정당당하게 수수께끼를 해결하는 법!\n코드를 닫고 현장 미션에 집중하세요! 😉", "color: #58a6ff; font-size: 13px; line-height: 1.6;");
 
         (function() {
             const firebaseConfig = {
@@ -178,14 +167,12 @@
             const database = firebase.database();
 
             const SALT = "HanseiSecretKey2026";
-            function getSecureHash(value) {
-                return CryptoJS.MD5(value + SALT).toString(CryptoJS.enc.Hex);
-            }
+            function getSecureHash(value) { return CryptoJS.MD5(value + SALT).toString(CryptoJS.enc.Hex); }
 
-            // [구조 변경] quizDatabase -> 코스 -> 세트(1,2,3) -> 단계(1~6) 구조로 확장
+            // [문제 데이터베이스 트리]
             const quizDatabase = {
-                1: { // 1코스
-                    1: { // 세트 1 (기존 문제 유형)
+                1: {
+                    1: {
                         1: { type: "choice", title: "🟢 1코스(A)-1: 보안 로그 분석", question: "해커가 보낸 낚시 문자(스미싱)를 골라 방화벽 암호를 무력화하세요!", options: ["[국민건강보험] 건강검진 보고서 발송 완료.", "[한세고] 박람회 부스로 놀러 오세요!", "[국제발신] 해외인증 결제완료 $499 확인 링크 클릭 ➔ http://hanse.io"], answer: getSecureHash("3") },
                         2: { type: "choice", title: "🟢 1코스(A)-2: 지능형 SW 연구실", question: "공공장소에서 비밀번호 없는 와이파이를 쓸 때 개인정보 유출을 막기 위해 하지 말아야 할 행동은?", options: ["유튜브 음악 스트리밍 듣기", "네이버 웹툰 보기", "모바일 뱅킹 로그인 및 계좌 이체하기"], answer: getSecureHash("3") },
                         3: { type: "choice", title: "🟢 1코스(A)-3: 하드웨어 보안실", question: "10cm 이내의 가까운 거리에서만 작동하여 교통카드, 스마트 페이 등에 쓰이는 보안성이 우수한 근거리 무선 통신 기술은?", options: ["블루투스 (Bluetooth)", "NFC (Near Field Communication)", "와이파이 (Wi-Fi)"], answer: getSecureHash("2") },
@@ -193,7 +180,7 @@
                         5: { type: "choice", title: "🟢 1코스(A)-5: 패스워드 해독", question: "해커의 공격을 막기에 가장 안전한 비밀번호 설정 규칙은?", options: ["내 생일과 전화번호 연속 조합", "키보드 연속 자판 배열 (예: qwerasdf123)", "영문 대소문자, 숫자, 특수문자를 혼합한 8자리 이상"], answer: getSecureHash("3") },
                         6: { type: "input", title: "🟢 1코스(A)-6: 메인프레임 복구", question: "미래의 화이트 해커를 키워내는 대한민국 최고의 정보보안 고등학교의 이름은?", answer: "한세사이버보안고" } 
                     },
-                    2: { // 세트 2
+                    2: {
                         1: { type: "choice", title: "🟢 1코스(B)-1: 스미싱 탐지", question: "다음 중 전형적인 스미싱 문자의 링크 특징으로 올맞은 것은?", options: ["정식 정부 기관의 정식 도메인 주소(.go.kr)", "출처가 불분명한 단축 URL 주소 및 임의의 IP 주소 링크", "한세고 공식 홈페이지 주소"], answer: getSecureHash("2") },
                         2: { type: "choice", title: "🟢 1코스(B)-2: 계정 관리 보안", question: "여러 웹사이트를 이용할 때 계정 유출 피해를 예방하기 위한 가장 올바른 수칙은?", options: ["모든 사이트의 아이디와 비밀번호를 동일하게 설정한다.", "사이트별로 서로 다른 비밀번호를 설정하고 2차 인증을 활성화한다.", "비밀번호를 메모장에 적어 바탕화면에 저장해 둔다."], answer: getSecureHash("2") },
                         3: { type: "choice", title: "🟢 1코스(B)-3: 디바이스 보안", question: "스마트폰이나 PC에 악성코드가 감염되는 것을 근본적으로 예방하기 위해 상시 켜두어야 하는 필수 소프트웨어는?", options: ["백신 및 실시간 감시 프로그램(Anti-Virus)", "웹 브라우저 개발자 도구", "동영상 다운로더 프로그램"], answer: getSecureHash("1") },
@@ -201,7 +188,7 @@
                         5: { type: "choice", title: "🟢 1코스(B)-5: 브라우저 보안", question: "인터넷 브라우저에서 공용 PC를 사용할 때 개인정보(쿠키, 방문 기록)를 남기지 않기 위해 활용하는 보안 모드는?", options: ["시크릿 모드 / 인코그니토 모드", "개발자 모드", "다크 모드"], answer: getSecureHash("1") },
                         6: { type: "input", title: "🟢 1코스(B)-6: 시스템 인가", question: "한세사이버보안고등학교에서 정보보안 요원을 양성하는 3개의 학과 중 '클라우드보안과', '메타버스게임과' 외 나머지 한 학과의 이름은? (OOO_과 제외 5글자)", answer: "지능형소프트웨어" }
                     },
-                    3: { // 세트 3
+                    3: {
                         1: { type: "choice", title: "🟢 1코스(C)-1: 소셜 네트워크 보안", question: "SNS 상에서 모르는 사람이 '기프티콘 이벤트에 당첨되었다'며 개인정보와 이메일 인증 코드를 요구할 때 대처법은?", options: ["당첨 상품을 받기 위해 즉시 입력해 준다.", "사기 혹은 계정 탈취 공격임을 인지하고 무시하거나 신고한다.", "친구들에게 공유하여 대신 입력하게 한다."], answer: getSecureHash("2") },
                         2: { type: "choice", title: "🟢 1코스(C)-2: 공공 와이파이 위협", question: "해커가 공공장소에 심어둔 가짜 와이파이에 연결되었을 때 발생할 수 있는 가장 직접적인 위험은?", options: ["노트북의 배터리가 빠르게 소모된다.", "인터넷 속도가 무조건 느려진다.", "내가 입력한 아이디, 패스워드 등 패킷 데이터가 탈취된다."], answer: getSecureHash("3") },
                         3: { type: "choice", title: "🟢 1코스(C)-3: 업데이트 관리", question: "운영체제(Windows, iOS, Android)의 보안 업데이트 알림이 떴을 때 가장 권장되는 행동은?", options: ["귀찮으므로 무기한 연기한다.", "보안 취약점 악용을 막기 위해 가능한 한 신속히 업데이트를 완료한다.", "운영체제를 포맷한다."], answer: getSecureHash("2") },
@@ -265,7 +252,7 @@
                 4: {
                     1: {
                         1: { type: "choice", title: "🔴 4코스(A)-1: 아스키 스트림 변환", question: "NFC 통신 패킷 분석 중 <code>Y29kZQ==</code> 라는 암호문을 발견했습니다. 끝에 붙은 '=' 표식이 특징인 이 인코딩 기법은?", options: ["AES-256", "MD5 해시", "Base64"], answer: getSecureHash("3") },
-                        2: { type: "choice", title: "🔴 4코스(A)-2: 일방향 연산 검증", question: "비밀번호 저장 시 사용되며, 한 번 암호화하면 원래의 평문으로 복호화(역산)가 불가능한 일방향 암호화 기술은?", options: ["대칭키 암호화", "해시(Hash) 함수", "공개키 암호화"], answer: getSecureHash("2") },
+                        2: { type: "choice", title: "🔴 4코스(A)-2: 일방향 연산 검증", question: "비밀번호 저장 시 사용으며, 한 번 암호화하면 원래의 평문으로 복호화(역산)가 불가능한 일방향 암호화 기술은?", options: ["대칭키 암호화", "해시(Hash) 함수", "공개키 암호화"], answer: getSecureHash("2") },
                         3: { type: "choice", title: "🔴 4코스(A)-3: 평행 이동 치환", question: "알파벳 글자를 일정 수만큼 평행이동시켜 단어를 암호화하는 기법으로, 'HANSEI'를 오른쪽으로 1칸씩 밀면 'IBOTFJ'가 되는 이 암호는?", options: ["시저(Caesar) 암호", "비즈네르 암호", "RSA 암호"], answer: getSecureHash("1") },
                         4: { type: "choice", title: "🔴 4코스(A)-4: 비밀키 분배 취약점", question: "암호화할 때 사용하는 키와 복호화할 때 사용하는 키가 동일하여 속도가 빠르지만, 키 전달 과정에서 탈취 위험이 있는 암호화 방식은?", options: ["비대칭키 방식", "대칭키 방식", "공개키 방식"], answer: getSecureHash("2") },
                         5: { type: "choice", title: "🔴 4코스(A)-5: 부인 방지 메커니즘", question: "공개키 암호화 방식을 활용하여, 송신자의 신원을 증명하고 데이터의 위변조가 없음을 보장하는 기술은?", options: ["방화벽", "전자서명(Digital Signature)", "접근 제어"], answer: getSecureHash("2") },
@@ -320,13 +307,15 @@
             const panelRules = [{}, { reqLevel: 1, quizLevel: 1 }, { reqLevel: 2, quizLevel: 2 }, { reqLevel: 3, quizLevel: 3 }, { reqLevel: 4, quizLevel: 4 }, { reqLevel: 5, quizLevel: 5 }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: 6 }];
 
             let selectedCourse = 1; let currentLevel = 1; let targetPanel = 1; let isWaitingForNextTag = false; let startTime = null; let timerInterval = null; let nickname = ""; let finalSeconds = 0;
-            let currentSet = 1; // 🎲 1, 2, 3번 세트 중 랜덤 지정될 변수
+            let currentSet = 1; 
+            let wrongCount = 0; // 🚨 오답 누적 카운트 변수 추가
 
             function showIntro() {
                 clearInterval(timerInterval);
                 document.getElementById('progress').innerText = "0 / 6";
                 document.getElementById('timer').innerText = "00:00";
                 document.getElementById('set-badge').innerText = "";
+                document.getElementById('wrong-count').innerText = "0";
                 isWaitingForNextTag = false;
                 
                 if (localStorage.getItem('is_playing') === 'true') {
@@ -334,9 +323,13 @@
                     selectedCourse = parseInt(localStorage.getItem('locked_course')) || 1;
                     currentLevel = parseInt(localStorage.getItem('current_level')) || 1;
                     targetPanel = parseInt(localStorage.getItem('target_panel')) || 1;
-                    currentSet = parseInt(localStorage.getItem('locked_set')) || 1; // 기존 플레이중이던 세트 로드
+                    currentSet = parseInt(localStorage.getItem('locked_set')) || 1; 
+                    wrongCount = parseInt(localStorage.getItem('wrong_count')) || 0; // 저장된 오답 횟수 로드
                     isWaitingForNextTag = localStorage.getItem('waiting_tag') === 'true';
                     
+                    // 만약 탈출 전에 이미 3번 이상 틀린 상태였다면 강제 홈 이동
+                    if (wrongCount >= 3) { triggerGameOver(); return; }
+
                     let savedStart = localStorage.getItem('start_time');
                     if (savedStart) startTime = new Date(parseInt(savedStart));
                     else { startTime = new Date(); localStorage.setItem('start_time', startTime.getTime()); }
@@ -351,7 +344,7 @@
                 
                 document.getElementById('game-screen').innerHTML = `
                     <h1>🕵️‍♂️ 사이버 요원 해킹 챌린지</h1>
-                    <p style="text-align:center; color:#8b949e; margin-bottom:20px;">코드명 입력 후 본인의 작전 코스를 선택하세요!</p>
+                    <p style="text-align:center; color:#8b949e; margin-bottom:20px;">코드명 입력 후 본인의 작전 코스를 선택하세요!<br><b style="color:var(--error);">🚨 경고: 총 3회 오답 제출 시 임무가 강제 종료됩니다.</b></p>
                     <input type="text" id="nickInput" placeholder="코드명 입력 (예: 서울중_홍길동)" />
                     <div style="margin-top:15px;">
                         <select id="courseSelect">
@@ -373,16 +366,16 @@
                 if(!input) { alert("작전 코드명을 입력해주세요!"); return; }
                 nickname = input;
                 selectedCourse = parseInt(document.getElementById('courseSelect').value);
-                currentLevel = 1; targetPanel = 1; isWaitingForNextTag = false;
+                currentLevel = 1; targetPanel = 1; isWaitingForNextTag = false; wrongCount = 0;
                 
-                // 🎲 미션 가동 시 1, 2, 3번 문제 세트 중 하나를 무작위로 선택함!
                 currentSet = Math.floor(Math.random() * 3) + 1;
                 
                 localStorage.setItem('locked_nickname', nickname);
                 localStorage.setItem('locked_course', selectedCourse);
-                localStorage.setItem('locked_set', currentSet); // 선택된 랜덤 세트 저장
+                localStorage.setItem('locked_set', currentSet); 
                 localStorage.setItem('current_level', currentLevel);
                 localStorage.setItem('target_panel', targetPanel);
+                localStorage.setItem('wrong_count', wrongCount); // 오답 수 초기화 저장
                 localStorage.setItem('waiting_tag', 'false');
                 localStorage.setItem('is_playing', 'true');
                 
@@ -420,8 +413,8 @@
 
             function renderQuiz(scannedPanel = null) {
                 document.getElementById('progress').innerText = `${currentLevel - 1} / 6`;
+                document.getElementById('wrong-count').innerText = wrongCount; // 상단바 동기화
                 
-                // 현재 구동중인 셋트 정보 알파벳 표기 (A, B, C)
                 let setAlphabet = currentSet === 1 ? 'A' : currentSet === 2 ? 'B' : 'C';
                 document.getElementById('set-badge').innerText = `[타입-${setAlphabet}]`;
 
@@ -443,8 +436,6 @@
                 }
 
                 let activeQuizLevel = (panelRules[targetPanel] && panelRules[targetPanel].quizLevel) || currentLevel;
-                
-                // [구조 변경 반영] quizDatabase[코스][세트][단계]로 문제를 추출
                 let q = quizDatabase[selectedCourse][currentSet][activeQuizLevel];
                 html += `<h1>${q.title}</h1><p style='margin-bottom:20px;'>${q.question}</p>`;
 
@@ -481,19 +472,11 @@
                     if(getSecureHash(userChoiceNumber) === q.answer) isCorrect = true; 
                 } else if(q.type === "input") {
                     let userAns = document.getElementById('textAnswer').value.trim();
-                    
                     let match = userAns.match(/flag\s*\{\s*([\s\S]*?)\s*\}/i);
-                    if (match) {
-                        userAns = match[1].trim(); 
-                    }
+                    if (match) userAns = match[1].trim(); 
                     
-                    if(userAns.toLowerCase() === q.answer.toLowerCase()) {
-                        isCorrect = true;
-                    }
-                    
-                    if(selectedCourse === 1 && userAns.includes("한세사이버보안고")) {
-                        isCorrect = true;
-                    }
+                    if(userAns.toLowerCase() === q.answer.toLowerCase()) isCorrect = true;
+                    if(selectedCourse === 1 && userAns.includes("한세사이버보안고")) isCorrect = true;
                 }
 
                 if(isCorrect) {
@@ -509,8 +492,36 @@
                         renderQuiz(); 
                     }
                 } else { 
-                    alert("❌ 암호 해독 실패: 접근이 거부되었습니다!"); 
+                    // ❌ 정답 오답 처리 로직
+                    wrongCount++;
+                    localStorage.setItem('wrong_count', wrongCount);
+                    document.getElementById('wrong-count').innerText = wrongCount;
+
+                    if (wrongCount >= 3) {
+                        triggerGameOver(); // 3번 틀리면 즉시 아웃
+                    } else {
+                        alert(`❌ 암호 해독 실패: 접근이 거부되었습니다! (오답 누적: ${wrongCount}회)\n⚠️ 3회 이상 실패 시 보안 시스템 락다운으로 탈락합니다.`);
+                    }
                 }
+            }
+
+            // ☠️ 게임 오버(탈락) 처리 함수
+            function triggerGameOver() {
+                clearInterval(timerInterval);
+                localStorage.clear(); // 데이터 전부 삭제
+
+                document.getElementById('game-screen').innerHTML = `
+                    <div class="error-text">🚨 보안 시스템 락다운 (임무 실패)</div>
+                    <div class="lock-notice" style="font-size: 1rem; line-height: 1.6;">
+                        중대한 해독 스크립트 오답이 <b>3회</b> 누적되었습니다.<br>
+                        사령부 보안 프로토콜에 의해 외부 침입자로 규정되어 현재 세션 접속이 차단되었습니다.
+                    </div>
+                    <p style="text-align:center; color:#8b949e; margin-top:15px;">
+                        진행 중이던 작전 데이터는 파기되었습니다.<br>처음 화면으로 이동하여 장비를 재구동하세요.
+                    </p>
+                    <button class="btn" id="fail-return-btn" style="text-align:center; background:var(--error); color:#ffffff; font-weight:bold; border:none; margin-top:15px;">처음 화면으로 돌아가기 🔄</button>
+                `;
+                document.getElementById('fail-return-btn').addEventListener('click', resetGame);
             }
 
             function saveRecordAndShowRank() {
@@ -559,7 +570,7 @@
             }
 
             document.getElementById('user-reset-btn').addEventListener('click', function() {
-                if (confirm("🔄 정말 처음화면으로 돌아가 미션을 다시 시작하시겠습니까?\n(현재 진행 중인 코스의 기록이 초기화됩니다.)")) {
+                if (confirm("🔄 정말 처음화면으로 돌아가 미션을 다시 시작하시겠습니까?\n(현재 진행 중인 코스의 기록과 오답 횟수가 초기화됩니다.)")) {
                     resetGame();
                 }
             });
