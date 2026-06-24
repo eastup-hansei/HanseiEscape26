@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한세 방탈출 - 마스터 최종 완성본 (랜덤 셔플 버전)</title>
+    <title>한세 방탈출 - 마스터 랜덤 완성본</title>
     <style>
         :root { 
             --primary: #58a6ff; 
@@ -121,7 +121,7 @@
 
     <div class="card">
         <div class="status-bar">
-            <div>진행: <span id="progress">0 / 6</span></div>
+            <div>진행: <span id="progress">0 / 6</span> <span id="set-badge" style="font-size:0.8rem; color:var(--primary);"></span></div>
             <div>⏱ <span id="timer">00:00</span></div>
             <button class="reset-link" id="user-reset-btn">초기화 🔄</button>
         </div>
@@ -182,46 +182,137 @@
                 return CryptoJS.MD5(value + SALT).toString(CryptoJS.enc.Hex);
             }
 
+            // [구조 변경] quizDatabase -> 코스 -> 세트(1,2,3) -> 단계(1~6) 구조로 확장
             const quizDatabase = {
-                1: {
-                    1: { type: "choice", title: "🟢 1코스-1: 보안 로그 분석", question: "해커가 보낸 낚시 문자(스미싱)를 골라 방화벽 암호를 무력화하세요!", options: ["[국민건강보험] 건강검진 보고서 발송 완료.", "[한세고] 박람회 부스로 놀러 오세요!", "[국제발신] 해외인증 결제완료 $499 확인 링크 클릭 ➔ http://hanse.io"], answer: getSecureHash("3") },
-                    2: { type: "choice", title: "🟢 1코스-2: 지능형 SW 연구실", question: "공공장소에서 비밀번호 없는 와이파이를 쓸 때 개인정보 유출을 막기 위해 하지 말아야 할 행동은?", options: ["유튜브 음악 스트리밍 듣기", "네이버 웹툰 보기", "모바일 뱅킹 로그인 및 계좌 이체하기"], answer: getSecureHash("3") },
-                    3: { type: "choice", title: "🟢 1코스-3: 하드웨어 보안실", question: "10cm 이내의 가까운 거리에서만 작동하여 교통카드, 스마트 페이 등에 쓰이는 보안성이 우수한 근거리 무선 통신 기술은?", options: ["블루투스 (Bluetooth)", "NFC (Near Field Communication)", "와이파이 (Wi-Fi)"], answer: getSecureHash("2") },
-                    4: { type: "choice", title: "🟢 1코스-4: 메타버스 전시관", question: "가상공간이나 SNS에서 타인의 정보를 보호하고 건전하게 소프트웨어를 이용하는 태도를 무엇이라 할까요?", options: ["디지털 리터러시 및 사이버 보안 의식", "무차별 대입 해킹 공격", "악성코드 트로이 목마 유포"], answer: getSecureHash("1") },
-                    5: { type: "choice", title: "🟢 1코스-5: 패스워드 해독", question: "해커의 공격을 막기에 가장 안전한 비밀번호 설정 규칙은?", options: ["내 생일과 전화번호 연속 조합", "키보드 연속 자판 배열 (예: qwerasdf123)", "영문 대소문자, 숫자, 특수문자를 혼합한 8자리 이상"], answer: getSecureHash("3") },
-                    6: { type: "input", title: "🟢 1코스-6: 메인프레임 복구", question: "미래의 화이트 해커를 키워내는 대한민국 최고의 정보보안 고등학교의 이름은?", answer: "한세사이버보안고" } 
+                1: { // 1코스
+                    1: { // 세트 1 (기존 문제 유형)
+                        1: { type: "choice", title: "🟢 1코스(A)-1: 보안 로그 분석", question: "해커가 보낸 낚시 문자(스미싱)를 골라 방화벽 암호를 무력화하세요!", options: ["[국민건강보험] 건강검진 보고서 발송 완료.", "[한세고] 박람회 부스로 놀러 오세요!", "[국제발신] 해외인증 결제완료 $499 확인 링크 클릭 ➔ http://hanse.io"], answer: getSecureHash("3") },
+                        2: { type: "choice", title: "🟢 1코스(A)-2: 지능형 SW 연구실", question: "공공장소에서 비밀번호 없는 와이파이를 쓸 때 개인정보 유출을 막기 위해 하지 말아야 할 행동은?", options: ["유튜브 음악 스트리밍 듣기", "네이버 웹툰 보기", "모바일 뱅킹 로그인 및 계좌 이체하기"], answer: getSecureHash("3") },
+                        3: { type: "choice", title: "🟢 1코스(A)-3: 하드웨어 보안실", question: "10cm 이내의 가까운 거리에서만 작동하여 교통카드, 스마트 페이 등에 쓰이는 보안성이 우수한 근거리 무선 통신 기술은?", options: ["블루투스 (Bluetooth)", "NFC (Near Field Communication)", "와이파이 (Wi-Fi)"], answer: getSecureHash("2") },
+                        4: { type: "choice", title: "🟢 1코스(A)-4: 메타버스 전시관", question: "가상공간이나 SNS에서 타인의 정보를 보호하고 건전하게 소프트웨어를 이용하는 태도를 무엇이라 할까요?", options: ["디지털 리터러시 및 사이버 보안 의식", "무차별 대입 해킹 공격", "악성코드 트로이 목마 유포"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "🟢 1코스(A)-5: 패스워드 해독", question: "해커의 공격을 막기에 가장 안전한 비밀번호 설정 규칙은?", options: ["내 생일과 전화번호 연속 조합", "키보드 연속 자판 배열 (예: qwerasdf123)", "영문 대소문자, 숫자, 특수문자를 혼합한 8자리 이상"], answer: getSecureHash("3") },
+                        6: { type: "input", title: "🟢 1코스(A)-6: 메인프레임 복구", question: "미래의 화이트 해커를 키워내는 대한민국 최고의 정보보안 고등학교의 이름은?", answer: "한세사이버보안고" } 
+                    },
+                    2: { // 세트 2
+                        1: { type: "choice", title: "🟢 1코스(B)-1: 스미싱 탐지", question: "다음 중 전형적인 스미싱 문자의 링크 특징으로 올맞은 것은?", options: ["정식 정부 기관의 정식 도메인 주소(.go.kr)", "출처가 불분명한 단축 URL 주소 및 임의의 IP 주소 링크", "한세고 공식 홈페이지 주소"], answer: getSecureHash("2") },
+                        2: { type: "choice", title: "🟢 1코스(B)-2: 계정 관리 보안", question: "여러 웹사이트를 이용할 때 계정 유출 피해를 예방하기 위한 가장 올바른 수칙은?", options: ["모든 사이트의 아이디와 비밀번호를 동일하게 설정한다.", "사이트별로 서로 다른 비밀번호를 설정하고 2차 인증을 활성화한다.", "비밀번호를 메모장에 적어 바탕화면에 저장해 둔다."], answer: getSecureHash("2") },
+                        3: { type: "choice", title: "🟢 1코스(B)-3: 디바이스 보안", question: "스마트폰이나 PC에 악성코드가 감염되는 것을 근본적으로 예방하기 위해 상시 켜두어야 하는 필수 소프트웨어는?", options: ["백신 및 실시간 감시 프로그램(Anti-Virus)", "웹 브라우저 개발자 도구", "동영상 다운로더 프로그램"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "🟢 1코스(B)-4: 악성 파일 식별", question: "이메일 첨부파일을 내려받을 때, 가장 악성코드가 숨겨져 있을 확률이 높은 위험한 파일 확장자는?", options: [".txt", ".png", ".exe"], answer: getSecureHash("3") },
+                        5: { type: "choice", title: "🟢 1코스(B)-5: 브라우저 보안", question: "인터넷 브라우저에서 공용 PC를 사용할 때 개인정보(쿠키, 방문 기록)를 남기지 않기 위해 활용하는 보안 모드는?", options: ["시크릿 모드 / 인코그니토 모드", "개발자 모드", "다크 모드"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "🟢 1코스(B)-6: 시스템 인가", question: "한세사이버보안고등학교에서 정보보안 요원을 양성하는 3개의 학과 중 '클라우드보안과', '메타버스게임과' 외 나머지 한 학과의 이름은? (OOO_과 제외 5글자)", answer: "지능형소프트웨어" }
+                    },
+                    3: { // 세트 3
+                        1: { type: "choice", title: "🟢 1코스(C)-1: 소셜 네트워크 보안", question: "SNS 상에서 모르는 사람이 '기프티콘 이벤트에 당첨되었다'며 개인정보와 이메일 인증 코드를 요구할 때 대처법은?", options: ["당첨 상품을 받기 위해 즉시 입력해 준다.", "사기 혹은 계정 탈취 공격임을 인지하고 무시하거나 신고한다.", "친구들에게 공유하여 대신 입력하게 한다."], answer: getSecureHash("2") },
+                        2: { type: "choice", title: "🟢 1코스(C)-2: 공공 와이파이 위협", question: "해커가 공공장소에 심어둔 가짜 와이파이에 연결되었을 때 발생할 수 있는 가장 직접적인 위험은?", options: ["노트북의 배터리가 빠르게 소모된다.", "인터넷 속도가 무조건 느려진다.", "내가 입력한 아이디, 패스워드 등 패킷 데이터가 탈취된다."], answer: getSecureHash("3") },
+                        3: { type: "choice", title: "🟢 1코스(C)-3: 업데이트 관리", question: "운영체제(Windows, iOS, Android)의 보안 업데이트 알림이 떴을 때 가장 권장되는 행동은?", options: ["귀찮으므로 무기한 연기한다.", "보안 취약점 악용을 막기 위해 가능한 한 신속히 업데이트를 완료한다.", "운영체제를 포맷한다."], answer: getSecureHash("2") },
+                        4: { type: "choice", title: "🟢 1코스(C)-4: 백업 프로세스", question: "랜섬웨어와 같은 악성코드 공격으로 데이터가 손실되는 비상 사태를 대비하는 가장 확실한 예방법은?", options: ["주기적으로 외부 저장장치(외장하드 등)나 독립된 클라우드에 데이터를 백업해 둔다.", "바탕화면 폴더 이름을 '백업'으로 바꾼다.", "컴퓨터 전원을 자주 껐다 켠다."], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "🟢 1코스(C)-5: 클라우드 접근 제어", question: "구글 드라이브나 네이버 MyBox 등 공유 링크를 만들 때 보안을 위해 주의해야 할 설정은?", options: ["링크가 있는 모든 사용자가 편집할 수 있도록 완전 개방한다.", "특정 대상에게만 권한을 부여하거나 뷰어 권한만 최소한으로 제공한다.", "링크 주소를 커뮤니티에 공개한다."], answer: getSecureHash("2") },
+                        6: { type: "input", title: "🟢 1코스(C)-6: 요원 최종 선언", question: "정보보안 고등학교의 명문, 한세사이버보안고등학교가 위치한 서울특별시의 자치구 이름은? (예: 마포구)", answer: "마포구" }
+                    }
                 },
                 2: {
-                    1: { type: "choice", title: "🔵 2코스-1: 암호화 전송 분석", question: "데이터가 암호화되어 전송되어 가로채기를 당해도 안전하며, 주소창에 자물쇠 표시가 뜨는 보안 프로토콜은?", options: ["HTTP", "FTP", "HTTPS"], answer: getSecureHash("3") },
-                    2: { type: "choice", title: "🔵 2코스-2: 경계 보안 시스템", question: "외부의 불법 침입을 막고 허가된 트래픽만 통과시키는 가장 기본적인 네트워크 보안 장비(시스템)는?", options: ["방화벽 (Firewall)", "라우터 (Router)", "스위치 (Switch)"], answer: getSecureHash("1") },
-                    3: { type: "choice", title: "🔵 2코스-3: 논리 채널 분석", question: "웹 서버(HTTP)가 기본적으로 사용하는 포트(Port) 번호는?", options: ["21번", "80번", "443번"], answer: getSecureHash("2") },
-                    4: { type: "choice", title: "🔵 2코스-4: 인터페이스 정찰", question: "현재 내가 사용 중인 컴퓨터의 네트워크 할당 정보와 IP 주소를 확인할 수 있는 Windows CMD 명령어는?", options: ["ping", "ipconfig", "dir"], answer: getSecureHash("2") },
-                    5: { type: "choice", title: "🔵 2코스-5: 트래фик 하이재킹", question: "사용자가 포털 사이트 주소를 입력했을 때, 진짜 사이트 대신 해커가 만든 가짜 위장 사이트로 접속을 유도하는 공격은?", options: ["DNS 스푸핑", "디도스(DDoS) 공격", "랜섬웨어 유포"], answer: getSecureHash("1") },
-                    6: { type: "input", title: "🔵 2코스-6: 디렉토리 해석기", question: "인터넷 주소(URL)를 컴퓨터가 이해할 수 있는 IP 주소로 변환해 주는 시스템의 약자는? (대문자 3글자)", answer: "dns" } 
+                    1: {
+                        1: { type: "choice", title: "🔵 2코스(A)-1: 암호화 전송 분석", question: "데이터가 암호화되어 전송되어 가로채기를 당해도 안전하며, 주소창에 자물쇠 표시가 뜨는 보안 프로토콜은?", options: ["HTTP", "FTP", "HTTPS"], answer: getSecureHash("3") },
+                        2: { type: "choice", title: "🔵 2코스(A)-2: 경계 보안 시스템", question: "외부의 불법 침입을 막고 허가된 트래픽만 통과시키는 가장 기본적인 네트워크 보안 장비(시스템)는?", options: ["방화벽 (Firewall)", "라우터 (Router)", "스위치 (Switch)"], answer: getSecureHash("1") },
+                        3: { type: "choice", title: "🔵 2코스(A)-3: 논리 채널 분석", question: "웹 서버(HTTP)가 기본적으로 사용하는 포트(Port) 번호는?", options: ["21번", "80번", "443번"], answer: getSecureHash("2") },
+                        4: { type: "choice", title: "🔵 2코스(A)-4: 인터페이스 정찰", question: "현재 내가 사용 중인 컴퓨터의 네트워크 할당 정보와 IP 주소를 확인할 수 있는 Windows CMD 명령어는?", options: ["ping", "ipconfig", "dir"], answer: getSecureHash("2") },
+                        5: { type: "choice", title: "🔵 2코스(A)-5: 트래픽 하이재킹", question: "사용자가 포털 사이트 주소를 입력했을 때, 진짜 사이트 대신 해커가 만든 가짜 위장 사이트로 접속을 유도하는 공격은?", options: ["DNS 스푸핑", "디도스(DDoS) 공격", "랜섬웨어 유포"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "🔵 2코스(A)-6: 디렉토리 해석기", question: "인터넷 주소(URL)를 컴퓨터가 이해할 수 있는 IP 주소로 변환해 주는 시스템의 약자는? (대문자 3글자)", answer: "dns" } 
+                    },
+                    2: {
+                        1: { type: "choice", title: "🔵 2코스(B)-1: 보안 셸 구조", question: "원격지 서버에 접속할 때 패스워드를 포함한 모든 통신 데이터를 암호화하여 텔넷(Telnet)의 취약점을 보완한 프로토콜은?", options: ["FTP", "SSH", "SMTP"], answer: getSecureHash("2") },
+                        2: { type: "choice", title: "🔵 2코스(B)-2: 가상 사설 통신망", question: "공용 네트워크를 마치 전용선처럼 안전하게 사용하여 재택근무나 외부 접속 시 데이터 보안을 유지해 주는 기술은?", options: ["VPN", "DNS", "DHCP"], answer: getSecureHash("1") },
+                        3: { type: "choice", title: "🔵 2코스(B)-3: 보안 채널 식별", question: "보안 웹 프로토콜인 HTTPS가 표준으로 사용하는 전용 TCP 포트 번호는 몇 번일까요?", options: ["80번", "443번", "8080번"], answer: getSecureHash("2") },
+                        4: { type: "choice", title: "🔵 2코스(B)-4: 네트워크 응답 진단", question: "상대방 서버나 컴퓨터가 현재 네트워크에 연결되어 정상 작동 중인지 ICMP 패킷을 보내 확인하는 명령어는?", options: ["ping", "netstat", "ipconfig"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "🔵 2코스(B)-5: 주소 변환 탐색", question: "내부 사설 IP 주소들을 하나의 공인 IP 주소로 변환하여 인터넷 연동을 가능하게 하고 내부 IP를 숨겨주는 네트워크 기술은?", options: ["NAT (Network Address Translation)", "ARP", "DHCP"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "🔵 2코스(B)-6: 주소 체계 파싱", question: "네트워크 상에서 장치들을 식별하기 위한 48비트 길이의 하드웨어 고유 주소를 뜻하는 약어는? (대문자 3글자, 예: OOO 주소)", answer: "mac" }
+                    },
+                    3: {
+                        1: { type: "choice", title: "🔵 2코스(C)-1: 무선 암호화 표준", question: "현재 와이파이(Wi-Fi) 망에서 가장 보편적으로 사용되는 강력한 무선 네트워크 암호화 표준 규격은?", options: ["WEP", "WPA2 / WPA3", "WPS"], answer: getSecureHash("2") },
+                        2: { type: "choice", title: "🔵 2코스(C)-2: 가용성 침해 위협", question: "수많은 좀비 PC들을 동원하여 타깃 서버에 대량의 트래픽을 집중시켜 서비스를 마비시키는 공격은?", options: ["디도스 (DDoS) 공격", "SQL 인젝션", "스니핑"], answer: getSecureHash("1") },
+                        3: { type: "choice", title: "🔵 2코스(C)-3: 자동 IP 할당 메커니즘", question: "네트워크에 접속하는 기기들에게 자동으로 IP 주소, 서브넷 마스크 등을 동적으로 할당해 주는 프로토콜은?", options: ["DHCP", "DNS", "FTP"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "🔵 2코스(C)-4: 세션 연결 상태 확인", question: "내 컴퓨터에 현재 연결된 네트워크 소켓 정보와 통신 포트 상태(Listening, Established)를 모니터링하는 CMD 명령어는?", options: ["dir", "netstat", "hostname"], answer: getSecureHash("2") },
+                        5: { type: "choice", title: "🔵 2코스(C)-5: 패킷 도청 기법", question: "네트워크 통신망을 지나다니는 패킷 데이터를 가로채서 사용자의 아이디나 비밀번호를 몰래 훔쳐보는 도청 행위를 뜻하는 용어는?", options: ["스니핑 (Sniffing)", "스푸핑 (Spoofing)", "디도스 (DDoS)"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "🔵 2코스(C)-6: 네트워크 마스터 코드", question: "네트워크 통신에서 데이터를 실어 나르는 기본 전송 단위(조각)를 뜻하는 네트워크 용어는 무엇일까요? (영어 2글자 또는 한글 2글자)", answer: "패킷" }
+                    }
                 },
                 3: {
-                    1: { type: "choice", title: "🟠 3코스-1: 데이터베이스 침투", question: "웹 로그인 창의 입력값 검증 미흡을 이용해 관리자 권한을 탈취하는 해킹 공격의 정확한 명칭은?", options: ["SQL Injection", "Cross Site Scripting", "DDoS 공격"], answer: getSecureHash("1") },
-                    2: { type: "choice", title: "🟠 3코스-2: 하이퍼텍스트 정적 분석", question: "웹 브라우저에서 마우스 우클릭이나 'F12' 키를 눌러 개발자 도구를 켜면 볼 수 있는, 웹 페이지의 구조를 이루는 코드는?", options: ["Python", "HTML", "C++"], answer: getSecureHash("2") },
-                    3: { type: "choice", title: "🟠 3코스-3: 세그먼트 스텔스 탐지", question: "웹 서버 내부망 침투를 위해 TCP 3-way Handshake를 완전히 맺지 않고, SYN 패킷만 보내 포트를 탐지하는 '스텔스 스캔' 옵션은?", options: ["nmap -sT", "nmap -sS", "nmap -sU"], answer: getSecureHash("2") },
-                    4: { type: "choice", title: "🟠 3코스-4: 스크립트 인젝션", question: "게시판에 악성 자바스크립트 스크립트를 삽입하여 이를 열람한 타 사용자의 쿠키(세션)를 탈취하는 해킹 기법은?", options: ["크로스 사이트 스크립팅 (XSS)", "버퍼 오버플로우", "포트 스캐닝"], answer: getSecureHash("1") },
-                    5: { type: "choice", title: "🟠 3코스-5: 제어 권한 탐색", question: "해커들이 보안이 허술한 웹 사이트의 관리자 페이지를 찾을 때 흔히 주소창 뒤에 입력하는 경로로 알맞은 것은?", options: ["/index.html", "/images/", "/admin"], answer: getSecureHash("3") },
-                    6: { type: "input", title: "🟠 3코스-6: WEB CTF 데이터 복구", question: "웹 취약점을 뚫고 Flag를 획득했습니다. 복구 코드를 입력하세요.<br><br><b>[ FLAG{web_hacker_init} ]</b>", answer: "web_hacker_init" } 
+                    1: {
+                        1: { type: "choice", title: "🟠 3코스(A)-1: 데이터베이스 침투", question: "웹 로그인 창의 입력값 검증 미흡을 이용해 관리자 권한을 탈취하는 해킹 공격의 정확한 명칭은?", options: ["SQL Injection", "Cross Site Scripting", "DDoS 공격"], answer: getSecureHash("1") },
+                        2: { type: "choice", title: "🟠 3코스(A)-2: 하이퍼텍스트 정적 분석", question: "웹 브라우저에서 마우스 우클릭이나 'F12' 키를 눌러 개발자 도구를 켜면 볼 수 있는, 웹 페이지의 구조를 이루는 코드는?", options: ["Python", "HTML", "C++"], answer: getSecureHash("2") },
+                        3: { type: "choice", title: "🟠 3코스(A)-3: 세그먼트 스텔스 탐지", question: "웹 서버 내부망 침투를 위해 TCP 3-way Handshake를 완전히 맺지 않고, SYN 패킷만 보내 포트를 탐지하는 '스텔스 스캔' 옵션은?", options: ["nmap -sT", "nmap -sS", "nmap -sU"], answer: getSecureHash("2") },
+                        4: { type: "choice", title: "🟠 3코스(A)-4: 스크립트 인젝션", question: "게시판에 악성 자바스크립트 스크립트를 삽입하여 이를 열람한 타 사용자의 쿠키(세션)를 탈취하는 해킹 기법은?", options: ["크로스 사이트 스크립팅 (XSS)", "버퍼 오버플로우", "포트 스캐닝"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "🟠 3코스(A)-5: 제어 권한 탐색", question: "해커들이 보안이 허술한 웹 사이트의 관리자 페이지를 찾을 때 흔히 주소창 뒤에 입력하는 경로로 알맞은 것은?", options: ["/index.html", "/images/", "/admin"], answer: getSecureHash("3") },
+                        6: { type: "input", title: "🟠 3코스(A)-6: WEB CTF 데이터 복구", question: "웹 취약점을 뚫고 Flag를 획득했습니다. 복구 코드를 입력하세요.<br><br><b>[ FLAG{web_hacker_init} ]</b>", answer: "web_hacker_init" } 
+                    },
+                    2: {
+                        1: { type: "choice", title: "🟠 3코스(B)-1: 인증 아키텍처 위협", question: "사용자가 로그인에 성공한 상태를 증명하는 정보로, 해커가 이를 훔치면 아이디와 비번 없이도 로그인이 가능해지는 고유 토큰은?", options: ["쿠키 / 세션 (Cookie & Session)", "도메인 (Domain)", "서브넷 (Subnet)"], answer: getSecureHash("1") },
+                        2: { type: "choice", title: "🟠 3코스(B)-2: 매개변수 변조", question: "웹 페이지 주소(URL) 뒤에 붙는 파라미터 값(예: idx=10)을 강제로 변경하여 다른 사용자의 비공개 글을 열람하는 취약점은?", options: ["파라미터 변조 / 불충분한 인증", "디도스 공격", "중간자 공격"], answer: getSecureHash("1") },
+                        3: { type: "choice", title: "🟠 3코스(B)-3: 프록시 패킷 변조", question: "웹 브라우저와 웹 서버 사이에서 오가는 HTTP 패킷을 가로채 값을 수정하고 변조하는 데 널리 쓰이는 웹 모니터링 도구는?", options: ["Burp Suite (버프 스위트)", "Notepad++", "VLC Player"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "🟠 3코스(B)-4: 파일 업로드 취약점", question: "게시판에 이미지 파일 대신 악성 서버 스크립트(웹셸, WebShell)를 업로드하여 웹 서버 전체의 제어권을 빼앗는 공격은?", options: ["악성 파일 업로드 공격 (File Upload)", "무차별 대입 공격", "SQL Injection"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "🟠 3코스(B)-5: 정보 누출 통로", question: "웹 서버 관리자가 부주의하게 남겨두어 일반 유저에게 소스코드나 중요 내부 파일 목록을 그대로 노출하는 취약점은?", options: ["디렉토리 리스팅 (Directory Listing)", "쿠키 변조", "XSS 공격"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "🟠 3코스(B)-6: WEB CTF 인젝션 우회", question: "웹 방화벽을 우회하고 마스터 계정의 DB 패스워드를 획득했습니다.<br><br><b>[ FLAG{sql_injection_clear} ]</b>", answer: "sql_injection_clear" }
+                    },
+                    3: {
+                        1: { type: "choice", title: "🟠 3코스(C)-1: 무차별 제어 대입", question: "사용자의 비밀번호를 알아내기 위해 가능한 모든 문자 조합을 하나씩 끝까지 대입해 보는 단순무식한 해킹 기법은?", options: ["무차별 대입 공격 (Brute Force)", "사회공학적 공격", "스마트 스캐닝"], answer: getSecureHash("1") },
+                        2: { type: "choice", title: "🟠 3코스(C)-2: 동적 클라이언트 엔진", question: "웹 페이지에서 실시간 애니메이션이나 동적 로직, XSS 해킹 공격의 중심 코드가 되는 브라우저 실행 언어는?", options: ["Java", "JavaScript", "C#"], answer: getSecureHash("2") },
+                        3: { type: "choice", title: "🟠 3코스(C)-3: HTTP 상태 시그널", question: "웹 서핑 중 요청한 페이지가 웹 서버에 존재하지 않을 때 브라우저가 반환하는 대표적인 HTTP 에러 상태 코드는?", options: ["200 OK", "404 Not Found", "500 Internal Server Error"], answer: getSecureHash("2") },
+                        4: { type: "choice", title: "🟠 3코스(C)-4: 경로 탐색 탈취", question: "입력창에 <code>../../etc/passwd</code>와 같이 상위 경로 이동 명령을 주어 서버 내부의 시스템 기밀 파일을 강제 탈취하는 취약점은?", options: ["경로 탐색 취약점 (Directory Traversal)", "DDoS 공격", "SQL 인젝션"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "🟠 3코스(C)-5: 에러 정보 노출 위협", question: "공격자가 웹 사이트에 고의로 잘못된 값을 입력했을 때 출력되는 에러 메시지를 기반으로 DB 구조를 파악하는 해킹 기법은?", options: ["Error-based SQL 인젝션", "스텔스 스캔", "XSS"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "🟠 3코스(C)-6: WEB CTF 웹셸 탈취", question: "서버 루트 권한을 확보하는 데 성공하여 최종 시스템 코드를 발굴했습니다.<br><br><b>[ FLAG{webshell_root_pwn} ]</b>", answer: "webshell_root_pwn" }
+                    }
                 },
                 4: {
-                    1: { type: "choice", title: "🔴 4코스-1: 아스키 스트림 변환", question: "NFC 통신 패킷 분석 중 <code>Y29kZQ==</code> 라는 암호문을 발견했습니다. 끝에 붙은 '=' 표식이 특징인 이 인코딩 기법은?", options: ["AES-256", "MD5 해시", "Base64"], answer: getSecureHash("3") },
-                    2: { type: "choice", title: "🔴 4코스-2: 일방향 연산 검증", question: "비밀번호 저장 시 사용되며, 한 번 암호화하면 원래의 평문으로 복호화(역산)가 불가능한 일방향 암호화 기술은?", options: ["대칭키 암호화", "해시(Hash) 함수", "공개키 암호화"], answer: getSecureHash("2") },
-                    3: { type: "choice", title: "🔴 4코스-3: 평행 이동 치환", question: "알파벳 글자를 일정 수만큼 평행이동시켜 단어를 암호화하는 기법으로, 'HANSEI'를 오른쪽으로 1칸씩 밀면 'IBOTFJ'가 되는 이 암호는?", options: ["시저(Caesar) 암호", "비즈네르 암호", "RSA 암호"], answer: getSecureHash("1") },
-                    4: { type: "choice", title: "🔴 4코스-4: 비밀키 분배 취약점", question: "암호화할 때 사용하는 키와 복호화할 때 사용하는 키가 동일하여 속도가 빠르지만, 키 전달 과정에서 탈취 위험이 있는 암호화 방식은?", options: ["비대칭키 방식", "대칭키 방식", "공개키 방식"], answer: getSecureHash("2") },
-                    5: { type: "choice", title: "🔴 4코스-5: 부인 방지 메커니즘", question: "공개키 암호화 방식을 활용하여, 송신자의 신원을 증명하고 데이터의 위변조가 없음을 보장하는 기술은?", options: ["방화벽", "전자서명(Digital Signature)", "접근 제어"], answer: getSecureHash("2") },
-                    6: { type: "input", title: "🔴 4코스-6: CRYPTO 매트릭스 조합", question: "해시 충돌을 우회하고 마스터 FLAG를 확보했습니다.<br><br><b>[ FLAG{crypto_key_success} ]</b>", answer: "crypto_key_success" } 
+                    1: {
+                        1: { type: "choice", title: "🔴 4코스(A)-1: 아스키 스트림 변환", question: "NFC 통신 패킷 분석 중 <code>Y29kZQ==</code> 라는 암호문을 발견했습니다. 끝에 붙은 '=' 표식이 특징인 이 인코딩 기법은?", options: ["AES-256", "MD5 해시", "Base64"], answer: getSecureHash("3") },
+                        2: { type: "choice", title: "🔴 4코스(A)-2: 일방향 연산 검증", question: "비밀번호 저장 시 사용되며, 한 번 암호화하면 원래의 평문으로 복호화(역산)가 불가능한 일방향 암호화 기술은?", options: ["대칭키 암호화", "해시(Hash) 함수", "공개키 암호화"], answer: getSecureHash("2") },
+                        3: { type: "choice", title: "🔴 4코스(A)-3: 평행 이동 치환", question: "알파벳 글자를 일정 수만큼 평행이동시켜 단어를 암호화하는 기법으로, 'HANSEI'를 오른쪽으로 1칸씩 밀면 'IBOTFJ'가 되는 이 암호는?", options: ["시저(Caesar) 암호", "비즈네르 암호", "RSA 암호"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "🔴 4코스(A)-4: 비밀키 분배 취약점", question: "암호화할 때 사용하는 키와 복호화할 때 사용하는 키가 동일하여 속도가 빠르지만, 키 전달 과정에서 탈취 위험이 있는 암호화 방식은?", options: ["비대칭키 방식", "대칭키 방식", "공개키 방식"], answer: getSecureHash("2") },
+                        5: { type: "choice", title: "🔴 4코스(A)-5: 부인 방지 메커니즘", question: "공개키 암호화 방식을 활용하여, 송신자의 신원을 증명하고 데이터의 위변조가 없음을 보장하는 기술은?", options: ["방화벽", "전자서명(Digital Signature)", "접근 제어"], answer: getSecureHash("2") },
+                        6: { type: "input", title: "🔴 4코스(A)-6: CRYPTO 매트릭스 조합", question: "해시 충돌을 우회하고 마스터 FLAG를 확보했습니다.<br><br><b>[ FLAG{crypto_key_success} ]</b>", answer: "crypto_key_success" } 
+                    },
+                    2: {
+                        1: { type: "choice", title: "🔴 4코스(B)-1: 16진수 원시 스트림", question: "통신 데이터 트래픽에서 컴퓨터가 처리하는 0~9, A~F로만 이루어진 로우(Raw) 데이터 포맷 방식을 무엇이라 하나요?", options: ["16진수 (Hexadecimal)", "Base64", "URL 인코딩"], answer: getSecureHash("1") },
+                        2: { type: "choice", title: "🔴 4코스(B)-2: 해시 고유 무결성", question: "해시 함수를 통과한 결과물은 원본 파일의 크기와 무관하게 항상 일정한 길이의 문자열을 반환합니다. 이 특성은?", options: ["고정된 크기의 출력값 (Fixed Length)", "가변적 출력값", "역산 가능성"], answer: getSecureHash("1") },
+                        3: { type: "choice", title: "🔴 4코스(B)-3: 키 교환의 난제 해결", question: "수학적 복잡성(소인수분해 등)을 이용해 암호화키와 복호화키를 다르게 설계하여 키 분배 문제를 해결한 현대 암호 체계는?", options: ["비대칭키 / 공개키 암호 방식 (RSA 등)", "대칭키 방식 (DES 등)", "시저 치환 방식"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "🔴 4코스(B)-4: 대칭키 표준 알고리즘", question: "미국 표준 기술 연구소(NIST)에서 제정하여 현재 전 세계에서 가장 안전하고 널리 쓰이는 고급 대칭키 블록 암호 알고리즘은?", options: ["AES", "MD5", "ROT13"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "🔴 4코스(B)-5: 하이퍼링크 특수 변환", question: "웹 주소창에 한글이나 특수문자가 포함되었을 때 <code>%EA%B2%BD</code> 와 같은 형태로 변환해 주는 기법은?", options: ["URL 인코딩 (Percent Encoding)", "Base64 인코딩", "AES 암호화"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "🔴 4코스(B)-6: CRYPTO 모듈 동기화", question: "시저 암호와 Base64 디코딩 체인을 풀고 키를 매칭했습니다.<br><br><b>[ FLAG{caesar_cipher_end} ]</b>", answer: "caesar_cipher_end" }
+                    },
+                    3: {
+                        1: { type: "choice", title: "🔴 4코스(C)-1: 고전 치환 분석", question: "알파벳 글자를 단순히 13칸씩 뒤로 밀어서 치환하는 암호 기법으로, 암호화와 복호화 과정이 완벽히 동일한 구조인 알고리즘은?", options: ["ROT13", "Base64", "AES-128"], answer: getSecureHash("1") },
+                        2: { type: "choice", title: "🔴 4코스(C)-2: 데이터 지문 연산", question: "전송받은 파일이 도중에 변조되거나 깨지지 않았는지 데이터의 무결성을 검증하기 위해 비교하는 고유 해시값 문자열은?", options: ["체크섬 (Checksum)", "인덱스 (Index)", "프로토콜 (Protocol)"], answer: getSecureHash("1") },
+                        3: { type: "choice", title: "🔴 4코스(C)-3: 공개키 소유권 보증", question: "공개키 암호화 방식에서 특정 공개키가 실제 그 사람의 고유 소유임을 신뢰성 있게 인증해 주는 공인 기관의 디지털 문서는?", options: ["공인인증서 / 정보보안 인증서", "방화벽 로그", "웹 쿠키"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "🔴 4코스(C)-4: 일방향 파괴 연산", question: "다음 알고리즘 중 성격이 다른 하나는? (나머지는 양방향 암호화로서 다시 평문으로 복구 가능한 알고리즘임)", options: ["SHA-256 (해시 함수)", "AES-256 (대칭키)", "RSA (공개키)"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "🔴 4코스(C)-5: 레일 펜스 기법", question: "평문의 문자들을 일정한 행과 열의 매트릭스 형태로 재배치하여 암호화하는 방식을 고전 암호학에서 무엇이라 하나요?", options: ["전치 암호 (Transposition Cipher)", "치환 암호", "일방향 암호"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "🔴 4코스(C)-6: CRYPTO 해시 키 전개", question: "공개키 서명 매커니즘을 복원하고 해시 검증을 통과했습니다.<br><br><b>[ FLAG{asymmetric_rsa_ok} ]</b>", answer: "asymmetric_rsa_ok" }
+                    }
                 },
                 5: {
-                    1: { type: "choice", title: "💀 5코스-1: 정적 바이너리 분석", question: "실행 파일(바이너리)을 구동하지 않고 내부의 힌트 문자열들을 정적으로 추출해 내는 리눅스 명령어로 알맞은 것은?", options: ["strings", "cat", "grep"], answer: getSecureHash("1") },
-                    2: { type: "choice", title: "💀 5코스-2: 자산 인질 프로세스", question: "사용자의 파일을 강제로 암호화한 뒤, 이를 복구해 주는 대가로 가상화폐(비트코인 등)를 요구하는 악성코드는?", options: ["트로이 목마", "웜 바이러스", "랜섬웨어 (Ransomware)"], answer: getSecureHash("3") },
-                    3: { type: "choice", title: "💀 5코스-3: 레지스터 흐름 제어", question: "컴파일된 프로그램 코드를 역추적하여 어셈블리어 형태로 실행 흐름을 분석하고 수정하는 기법을 무엇이라 하나요?", options: ["디버깅/리버싱 (Reversing)", "포워딩 (Forwarding)", "리팩토링 (Refactoring)"], answer: getSecureHash("1") },
-                    4: { type: "choice", title: "💀 5코스-4: 비기술적 기밀 탈취", question: "기술적 취약점이 아닌, 인간의 신뢰나 심리를 교묘히 이용하여 비밀번호를 알아내는 해킹 기법(예: 숄더 서핑 등)은?", options: ["사회공학적 해킹 (Social Engineering)", "버퍼 오버플로우", "APT 공격"], answer: getSecureHash("1") },
-                    5: { type: "choice", title: "💀 5코스-5: 커널 격리 동적 관측", question: "악성코드가 실제 PC 시스템에 영향을 주지 않도록 가상의 안전한 격리 환경 내에서 파일을 실행해 분석하는 기술은?", options: ["포트 포워딩", "DMZ 구역", "샌드박스 (Sandbox)"], answer: getSecureHash("3") },
-                    6: { type: "input", title: "💀 5코스-6: OVERLORD 통신 오버라이드", question: "한세고 사이버 요원 최종 선발 테스트 통과! 마스터 코드를 입력하세요.<br><br><b>[ FLAG{hansei_master_agent_2026} ]</b>", answer: "hansei_master_agent_2026" }
+                    1: {
+                        1: { type: "choice", title: "💀 5코스(A)-1: 정적 바이너리 분석", question: "실행 파일(바이너리)을 구동하지 않고 내부의 힌트 문자열들을 정적으로 추출해 내는 리눅스 명령어로 알맞은 것은?", options: ["strings", "cat", "grep"], answer: getSecureHash("1") },
+                        2: { type: "choice", title: "💀 5코스(A)-2: 자산 인질 프로세스", question: "사용자의 파일을 강제로 암호화한 뒤, 이를 복구해 주는 대가로 가상화폐(비트코인 등)를 요구하는 악성코드는?", options: ["트로이 목마", "웜 바이러스", "랜섬웨어 (Ransomware)"], answer: getSecureHash("3") },
+                        3: { type: "choice", title: "💀 5코스(A)-3: 레지스터 흐름 제어", question: "컴파일된 프로그램 코드를 역추적하여 어셈블리어 형태로 실행 흐름을 분석하고 수정하는 기법을 무엇이라 하나요?", options: ["디버깅/리버싱 (Reversing)", "포워딩 (Forwarding)", "리팩토링 (Refactoring)"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "💀 5코스(A)-4: 비기술적 기밀 탈취", question: "기술적 취약점이 아닌, 인간의 신뢰나 심리를 교묘히 이용하여 비밀번호를 알아내는 해킹 기법(예: 숄더 서핑 등)은?", options: ["사회공학적 해킹 (Social Engineering)", "버퍼 오버플로우", "APT 공격"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "💀 5코스(A)-5: 커널 격리 동적 관측", question: "악성코드가 실제 PC 시스템에 영향을 주지 않도록 가상의 안전한 격리 환경 내에서 파일을 실행해 분석하는 기술은?", options: ["포트 포워딩", "DMZ 구역", "샌드박스 (Sandbox)"], answer: getSecureHash("3") },
+                        6: { type: "input", title: "💀 5코스(A)-6: OVERLORD 통신 오버라이드", question: "한세고 사이버 요원 최종 선발 테스트 통과! 마스터 코드를 입력하세요.<br><br><b>[ FLAG{hansei_master_agent_2026} ]</b>", answer: "hansei_master_agent_2026" }
+                    },
+                    2: {
+                        1: { type: "choice", title: "💀 5코스(B)-1: 기계어 디컴파일러", question: "바이너리를 분석하여 C언어에 준하는 고수준 소스코드로 역컴파일해 주는 대표적인 리버싱 소프트웨어 도구는?", options: ["IDA Pro / Ghidra", "Wireshark", "Chrome"], answer: getSecureHash("1") },
+                        2: { type: "choice", title: "💀 5코스(B)-2: 정상 위장 트로이", question: "정상적인 유틸리티 프로그램으로 위장하여 시스템에 잠입한 뒤, 백도어를 열어두는 컴퓨터 악성코드는?", options: ["트로이 목마 (Trojan Horse)", "웜 (Worm)", "스파이웨어"], answer: getSecureHash("1") },
+                        3: { type: "choice", title: "💀 5코스(B)-3: 스택 버퍼 오버플로우", question: "메모리에 할당된 버퍼의 크기를 초과하는 대량의 데이터를 밀어 넣어 리턴 주소를 변조하여 시스템을 장악하는 취약점은?", options: ["버퍼 오버플로우 (Buffer Overflow)", "XSS", "디도스 공격"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "💀 5코스(B)-4: 동적 추적 인터페이스", question: "프로그램을 한 단계씩(Step Over/Into) 실행하면서 CPU 레지스터 값과 메모리 상태를 실시간 관측하는 동적 분석 기법은?", options: ["디버깅 (Debugging)", "정적 덤프", "암호화"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "💀 5코스(B)-5: 표적형 지능 위협", question: "특정 기업이나 정부 기관을 타깃으로 정하고, 오랜 기간 잠복하며 다양한 해킹 기법을 총동원하는 고도화된 지속성 공격은?", options: ["APT 공격 (Advanced Persistent Threat)", "랜섬웨어 유포", "스미싱"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "💀 5코스(B)-6: OVERLORD 제어 인젝터", question: "스택 포인터 복구 완료! 백도어 무력화 마스터 플래그를 입력하세요.<br><br><b>[ FLAG{buffer_overflow_defeat} ]</b>", answer: "buffer_overflow_defeat" }
+                    },
+                    3: {
+                        1: { type: "choice", title: "💀 5코스(C)-1: 어셈블리 분기문 제어", question: "어셈블리어 언어에서 조건문 비교 결과에 따라 실행 흐름을 특정 주소로 완전히 점프시키는 분기 명령 코드는?", options: ["JMP / JNE / JE", "MOV", "PUSH / POP"], answer: getSecureHash("1") },
+                        2: { type: "choice", title: "💀 5코스(C)-2: 자가 증식 위협", question: "다른 정상 파일에 기생하지 않고 독립된 프로세스로서 네트워크를 통해 스스로를 무한 복제하며 시스템을 파괴하는 악성코드는?", options: ["웜 (Worm)", "컴퓨터 바이러스", "로직 폭탄"], answer: getSecureHash("1") },
+                        3: { type: "choice", title: "💀 5코스(C)-3: 시스템 감시자", question: "윈도우 시스템에서 실행 중인 프로세스 목록과 CPU, 메모리 소모량을 정밀 관측하고 강제 종료할 수 있는 기본 유틸리티는?", options: ["작업 관리자 (Task Manager)", "파일 탐색기", "제어판"], answer: getSecureHash("1") },
+                        4: { type: "choice", title: "💀 5코스(C)-4: 안티 리버싱 기술", question: "해커나 분석가가 디버거를 붙여 리버싱 분석을 하려는 시도를 감지하고 프로그램 실행을 방해하거나 멈추는 방어 기술은?", options: ["안티 디버깅 (Anti-Debugging)", "데이터 암호화", "코드 리팩토링"], answer: getSecureHash("1") },
+                        5: { type: "choice", title: "💀 5코스(C)-5: 은밀한 백도어 통로", question: "시스템 관리자가 예기치 못한 장애 시 진입하기 위해 열어두거나, 해커가 침투 후 재진입하기 위해 심어두는 비밀 통로는?", options: ["백도어 (Backdoor)", "방화벽", "세션 토큰"], answer: getSecureHash("1") },
+                        6: { type: "input", title: "💀 5코스(C)-6: OVERLORD 바이너리 패치", question: "안티 디버깅 우회 성공! 메인 시스템 완전 복원 플래그를 입력하세요.<br><br><b>[ FLAG{anti_debugging_bypass} ]</b>", answer: "anti_debugging_bypass" }
+                    }
                 }
             };
 
@@ -229,26 +320,13 @@
             const panelRules = [{}, { reqLevel: 1, quizLevel: 1 }, { reqLevel: 2, quizLevel: 2 }, { reqLevel: 3, quizLevel: 3 }, { reqLevel: 4, quizLevel: 4 }, { reqLevel: 5, quizLevel: 5 }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: 6 }];
 
             let selectedCourse = 1; let currentLevel = 1; let targetPanel = 1; let isWaitingForNextTag = false; let startTime = null; let timerInterval = null; let nickname = ""; let finalSeconds = 0;
-            
-            // 🔄 문제의 순서를 기억할 매핑 배열 추가
-            let currentQuizOrder = [1, 2, 3, 4, 5, 6];
-
-            // 🔀 1~5번 문제를 랜덤하게 섞는 셔플 함수
-            function shuffleQuizOrder() {
-                let numbers = [1, 2, 3, 4, 5];
-                for (let i = numbers.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-                }
-                // 1~5번은 무작위 순서로 섞고, 마지막 6번(FLAG 주관식)은 무조건 고정
-                currentQuizOrder = [...numbers, 6];
-                localStorage.setItem('quiz_order', JSON.stringify(currentQuizOrder));
-            }
+            let currentSet = 1; // 🎲 1, 2, 3번 세트 중 랜덤 지정될 변수
 
             function showIntro() {
                 clearInterval(timerInterval);
                 document.getElementById('progress').innerText = "0 / 6";
                 document.getElementById('timer').innerText = "00:00";
+                document.getElementById('set-badge').innerText = "";
                 isWaitingForNextTag = false;
                 
                 if (localStorage.getItem('is_playing') === 'true') {
@@ -256,15 +334,8 @@
                     selectedCourse = parseInt(localStorage.getItem('locked_course')) || 1;
                     currentLevel = parseInt(localStorage.getItem('current_level')) || 1;
                     targetPanel = parseInt(localStorage.getItem('target_panel')) || 1;
+                    currentSet = parseInt(localStorage.getItem('locked_set')) || 1; // 기존 플레이중이던 세트 로드
                     isWaitingForNextTag = localStorage.getItem('waiting_tag') === 'true';
-                    
-                    // 기존에 섞였던 문제 순서 로드
-                    let savedOrder = localStorage.getItem('quiz_order');
-                    if (savedOrder) {
-                        currentQuizOrder = JSON.parse(savedOrder);
-                    } else {
-                        shuffleQuizOrder();
-                    }
                     
                     let savedStart = localStorage.getItem('start_time');
                     if (savedStart) startTime = new Date(parseInt(savedStart));
@@ -304,11 +375,12 @@
                 selectedCourse = parseInt(document.getElementById('courseSelect').value);
                 currentLevel = 1; targetPanel = 1; isWaitingForNextTag = false;
                 
-                // 게임 가동 시 무조건 문제 랜덤으로 섞기
-                shuffleQuizOrder();
+                // 🎲 미션 가동 시 1, 2, 3번 문제 세트 중 하나를 무작위로 선택함!
+                currentSet = Math.floor(Math.random() * 3) + 1;
                 
                 localStorage.setItem('locked_nickname', nickname);
                 localStorage.setItem('locked_course', selectedCourse);
+                localStorage.setItem('locked_set', currentSet); // 선택된 랜덤 세트 저장
                 localStorage.setItem('current_level', currentLevel);
                 localStorage.setItem('target_panel', targetPanel);
                 localStorage.setItem('waiting_tag', 'false');
@@ -348,6 +420,11 @@
 
             function renderQuiz(scannedPanel = null) {
                 document.getElementById('progress').innerText = `${currentLevel - 1} / 6`;
+                
+                // 현재 구동중인 셋트 정보 알파벳 표기 (A, B, C)
+                let setAlphabet = currentSet === 1 ? 'A' : currentSet === 2 ? 'B' : 'C';
+                document.getElementById('set-badge').innerText = `[타입-${setAlphabet}]`;
+
                 let html = "";
 
                 if (isWaitingForNextTag) {
@@ -365,10 +442,10 @@
                     html += `<div class="lock-notice">🔒 동선 이탈 경고: 현재 요원님은 <b>[ ${panelNames[targetPanel]} ]</b> 임무를 수행해야 합니다. 이동해 주세요.</div>`;
                 }
 
-                // 셔플된 문제 배열에서 현재 진도(currentLevel)에 맞는 실제 문제를 가져옴
-                let actualQuizIndex = currentQuizOrder[currentLevel - 1];
-                let q = quizDatabase[selectedCourse][actualQuizIndex];
+                let activeQuizLevel = (panelRules[targetPanel] && panelRules[targetPanel].quizLevel) || currentLevel;
                 
+                // [구조 변경 반영] quizDatabase[코스][세트][단계]로 문제를 추출
+                let q = quizDatabase[selectedCourse][currentSet][activeQuizLevel];
                 html += `<h1>${q.title}</h1><p style='margin-bottom:20px;'>${q.question}</p>`;
 
                 if(q.type === "choice") {
@@ -395,9 +472,8 @@
             }
 
             function submitAnswer(chosenIdx) {
-                // 채점할 때도 현재 레벨에 매핑된 진짜 퀴즈 인덱스를 확인
-                let actualQuizIndex = currentQuizOrder[currentLevel - 1];
-                let q = quizDatabase[selectedCourse][actualQuizIndex];
+                let activeQuizLevel = (panelRules[targetPanel] && panelRules[targetPanel].quizLevel) || currentLevel;
+                let q = quizDatabase[selectedCourse][currentSet][activeQuizLevel];
                 let isCorrect = false;
 
                 if(q.type === "choice") { 
@@ -443,12 +519,13 @@
                 let timeString = `${String(Math.floor(finalSeconds / 60)).padStart(2, '0')}:${String(finalSeconds % 60).padStart(2, '0')}`;
                 let baseScore = selectedCourse * 2000; let finalCalculatedScore = Math.max(100, baseScore - finalSeconds);
 
-                database.ref('ranking').push({ username: nickname, courseName: `${selectedCourse}코스`, displayTime: timeString, finalScore: finalCalculatedScore, timestamp: Date.now() });
+                let setAlphabet = currentSet === 1 ? 'A' : currentSet === 2 ? 'B' : 'C';
+                database.ref('ranking').push({ username: nickname, courseName: `${selectedCourse}코스(${setAlphabet})`, displayTime: timeString, finalScore: finalCalculatedScore, timestamp: Date.now() });
                 localStorage.clear();
 
                 document.getElementById('game-screen').innerHTML = `
                     <div class="success-text">🎉 미션 완벽 클리어! 🎉</div>
-                    <p style="text-align:center; margin-bottom:15px;"><b>요원코드:</b> ${nickname} [${selectedCourse}코스] <br> <b>획득 점수:</b> <span style="color:var(--gold); font-weight:bold;">${finalCalculatedScore.toLocaleString()}점</span> (기록: ${timeString})</p>
+                    <p style="text-align:center; margin-bottom:15px;"><b>요원코드:</b> ${nickname} [${selectedCourse}코스-${setAlphabet}타입] <br> <b>획득 점수:</b> <span style="color:var(--gold); font-weight:bold;">${finalCalculatedScore.toLocaleString()}점</span> (기록: ${timeString})</p>
                     <hr style="border:none; border-top:1px solid #30363d; margin:15px 0;">
                     <h3 style="text-align:center; color:var(--primary); font-size:1.1rem; margin-bottom:10px;">📊 통합 요원 명예의 전당 (TOP 5)</h3>
                     <table class="rank-table"><thead><tr><th>순위</th><th>요원명</th><th>점수</th><th>기록</th></tr></thead><tbody id="rank-rows"><tr><td colspan="4" style="text-align:center; color:#8b949e;">사령부 데이터 동기화 중...</td></tr></tbody></table>
