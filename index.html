@@ -306,11 +306,12 @@
             const panelNames = ["", "1번 판넬 (시작 : 작전발령)", "2번 판넬 (Zone1 : 지능형SW과 교육과정)", "3번 판넬 (Zone1 : 지능형SW과 미션 힌트)", "4번 판넬 (Zone2 : 메타버스게임과 교육과정)", "5번 판넬 (Zone2 : 메타버스게임과 미션 힌트)", "6번 판넬 (Zone3 : 클라우드보안과 교육과정)", "7번 판넬 (Zone3 : 클라우드보안과 미션힌트)", "8번 판넬 (임무완료 : 최종 요원 인증서 수령처)"];
             const panelRules = [{}, { reqLevel: 1, quizLevel: 1 }, { reqLevel: 2, quizLevel: 2 }, { reqLevel: 3, quizLevel: 3 }, { reqLevel: 4, quizLevel: 4 }, { reqLevel: 5, quizLevel: 5 }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: null, isPass: true }, { reqLevel: 6, quizLevel: 6 }];
 
+            // 🚨 글로벌 변수를 let으로 완전히 제어 가능하게 수정
             let selectedCourse = 1; let currentLevel = 1; let targetPanel = 1; let isWaitingForNextTag = false; let startTime = null; let timerInterval = null; let nickname = ""; let finalSeconds = 0;
             let currentSet = 1; 
-            let wrongCount = 0; // 🚨 오답 누적 카운트 변수 추가
+            let wrongCount = 0; 
 
-            function showIntro() {
+            window.showIntro = function() {
                 clearInterval(timerInterval);
                 document.getElementById('progress').innerText = "0 / 6";
                 document.getElementById('timer').innerText = "00:00";
@@ -324,10 +325,9 @@
                     currentLevel = parseInt(localStorage.getItem('current_level')) || 1;
                     targetPanel = parseInt(localStorage.getItem('target_panel')) || 1;
                     currentSet = parseInt(localStorage.getItem('locked_set')) || 1; 
-                    wrongCount = parseInt(localStorage.getItem('wrong_count')) || 0; // 저장된 오답 횟수 로드
+                    wrongCount = parseInt(localStorage.getItem('wrong_count')) || 0; 
                     isWaitingForNextTag = localStorage.getItem('waiting_tag') === 'true';
                     
-                    // 만약 탈출 전에 이미 3번 이상 틀린 상태였다면 강제 홈 이동
                     if (wrongCount >= 3) { triggerGameOver(); return; }
 
                     let savedStart = localStorage.getItem('start_time');
@@ -375,7 +375,7 @@
                 localStorage.setItem('locked_set', currentSet); 
                 localStorage.setItem('current_level', currentLevel);
                 localStorage.setItem('target_panel', targetPanel);
-                localStorage.setItem('wrong_count', wrongCount); // 오답 수 초기화 저장
+                localStorage.setItem('wrong_count', 0); 
                 localStorage.setItem('waiting_tag', 'false');
                 localStorage.setItem('is_playing', 'true');
                 
@@ -394,7 +394,7 @@
                 document.getElementById('timer').innerText = `${min}:${sec}`;
             }
 
-            function processTagAction(scannedPanel) {
+            window.processTagAction = function(scannedPanel) {
                 if (isWaitingForNextTag) {
                     if (scannedPanel === targetPanel) {
                         isWaitingForNextTag = false;
@@ -413,7 +413,7 @@
 
             function renderQuiz(scannedPanel = null) {
                 document.getElementById('progress').innerText = `${currentLevel - 1} / 6`;
-                document.getElementById('wrong-count').innerText = wrongCount; // 상단바 동기화
+                document.getElementById('wrong-count').innerText = wrongCount; 
                 
                 let setAlphabet = currentSet === 1 ? 'A' : currentSet === 2 ? 'B' : 'C';
                 document.getElementById('set-badge').innerText = `[타입-${setAlphabet}]`;
@@ -492,23 +492,22 @@
                         renderQuiz(); 
                     }
                 } else { 
-                    // ❌ 정답 오답 처리 로직
-                    wrongCount++;
+                    // ❌ 스코프 내에서 wrongCount 제어 확실하게 수정
+                    wrongCount = (parseInt(localStorage.getItem('wrong_count')) || 0) + 1;
                     localStorage.setItem('wrong_count', wrongCount);
                     document.getElementById('wrong-count').innerText = wrongCount;
 
                     if (wrongCount >= 3) {
-                        triggerGameOver(); // 3번 틀리면 즉시 아웃
+                        triggerGameOver(); 
                     } else {
-                        alert(`❌ 암호 해독 실패: 접근이 거부되었습니다! (오답 누적: ${wrongCount}회)\n⚠️ 3회 이상 실패 시 보안 시스템 락다운으로 탈락합니다.`);
+                        alert(`❌ 암호 해독 실패: 접근이 거부되었습니다! (오답 누적: ${wrongCount}회)\n⚠️ 3회 실패 시 보안 시스템 락다운으로 전면 탈락합니다.`);
                     }
                 }
             }
 
-            // ☠️ 게임 오버(탈락) 처리 함수
             function triggerGameOver() {
                 clearInterval(timerInterval);
-                localStorage.clear(); // 데이터 전부 삭제
+                localStorage.clear(); 
 
                 document.getElementById('game-screen').innerHTML = `
                     <div class="error-text">🚨 보안 시스템 락다운 (임무 실패)</div>
@@ -517,7 +516,7 @@
                         사령부 보안 프로토콜에 의해 외부 침입자로 규정되어 현재 세션 접속이 차단되었습니다.
                     </div>
                     <p style="text-align:center; color:#8b949e; margin-top:15px;">
-                        진행 중이던 작전 데이터는 파기되었습니다.<br>처음 화면으로 이동하여 장비를 재구동하세요.
+                        진행 중이던 작전 데이터는 모두 파기되었습니다.<br>처음 화면으로 이동하여 시스템을 다시 재부팅하십시오.
                     </p>
                     <button class="btn" id="fail-return-btn" style="text-align:center; background:var(--error); color:#ffffff; font-weight:bold; border:none; margin-top:15px;">처음 화면으로 돌아가기 🔄</button>
                 `;
@@ -560,7 +559,7 @@
                 });
             }
 
-            function triggerTag(num) { if(localStorage.getItem('is_playing') === 'true') { processTagAction(num); } else { alert("인트로 화면에서 미션을 가동해 주세요."); } }
+            window.triggerTag = function(num) { if(localStorage.getItem('is_playing') === 'true') { processTagAction(num); } else { alert("인트로 화면에서 미션을 가동해 주세요."); } }
             
             function resetGame() { 
                 localStorage.clear(); 
